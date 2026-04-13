@@ -1,0 +1,186 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+export function ResidentDashboard() {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('docs');
+
+  return (
+    <div id="view-resident" className="view on" style={{ paddingTop: 0 }}>
+      <div className="dash-wrap">
+        <aside className="sidebar">
+          <div className="sb-logo">
+            <div className="sb-logo-mark">R</div>
+            <span className="sb-logo-txt">Resi<span>.ai</span></span>
+          </div>
+          <div className="sb-section">
+            <div className="sb-sec-label">My Building</div>
+            <div className={`sb-item ${activeTab === 'docs' ? 'on' : ''}`} onClick={() => setActiveTab('docs')}>
+              <span className="ic">📁</span>Documents
+            </div>
+            <div className={`sb-item ${activeTab === 'chat' ? 'on' : ''}`} onClick={() => setActiveTab('chat')}>
+              <span className="ic">🤖</span>Ask AI
+            </div>
+            <div className={`sb-item ${activeTab === 'issues' ? 'on' : ''}`} onClick={() => setActiveTab('issues')}>
+              <span className="ic">🔍</span>Issue Log<span className="sb-badge">2</span>
+            </div>
+          </div>
+          <div className="sb-section">
+            <div className="sb-sec-label">Account</div>
+            <div className="sb-item" onClick={() => navigate('/login')}><span className="ic">⚙️</span>Settings</div>
+          </div>
+          <div className="sb-user">
+            <div className="sb-av">TM</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="sb-uname">Terry Ma</div>
+              <div className="sb-urole">Resident · Flat 3A</div>
+            </div>
+            <div className="sb-logout" onClick={() => navigate('/')} title="Sign out">↩</div>
+          </div>
+        </aside>
+        
+        <main className="main">
+          {/* Welcome Banner */}
+          <div style={{ background: 'linear-gradient(135deg,var(--navy),#1e3a8a)', borderRadius: '14px', padding: '24px 28px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+            <div>
+              <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#60A5FA', marginBottom: '4px' }}>Maple House · Flat 3A</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: '#fff', marginBottom: '4px' }}>Good morning, Terry 👋</div>
+              <div style={{ fontSize: '13px', color: '#94A3B8' }}>3 documents available · 2 issues open · Next AGM: November 2026</div>
+            </div>
+            <button className="btn btn-primary btn-sm" onClick={() => setActiveTab('chat')}>🤖 Ask AI about your building</button>
+          </div>
+
+          {/* Resident Tabs */}
+          <div className="tab-bar">
+            <div className={`tab ${activeTab === 'docs' ? 'on' : ''}`} onClick={() => setActiveTab('docs')}>📁 Documents</div>
+            <div className={`tab ${activeTab === 'chat' ? 'on' : ''}`} onClick={() => setActiveTab('chat')}>🤖 Ask AI</div>
+            <div className={`tab ${activeTab === 'issues' ? 'on' : ''}`} onClick={() => setActiveTab('issues')}>🔍 Issue Log</div>
+          </div>
+
+          {/* Docs Tab */}
+          {activeTab === 'docs' && (
+            <div className="tc on">
+              <div className="alert a-blue">
+                <div className="alert-ic">📋</div>
+                <div><div className="alert-title">Your building documents</div>These are documents your committee has shared with all residents. For further queries, use the AI assistant.</div>
+              </div>
+              <div className="doc-grid">
+                <div className="doc-card" onClick={() => alert('📄 Opening AGM Minutes – November 2025...')}>
+                  <div className="doc-ic">📋</div>
+                  <div className="doc-name">AGM Minutes – November 2025</div>
+                  <div className="doc-meta">Uploaded 20 Nov 2025</div>
+                  <div className="doc-foot">
+                    <span className="badge b-green">All Residents</span>
+                    <span className="text-xs text2">PDF · 340KB</span>
+                  </div>
+                </div>
+                <div className="doc-card" onClick={() => alert('📄 Opening Building Insurance Certificate 2025...')}>
+                  <div className="doc-ic">🛡️</div>
+                  <div className="doc-name">Building Insurance Certificate 2025</div>
+                  <div className="doc-meta">Uploaded 3 Jan 2026</div>
+                  <div className="doc-foot">
+                    <span className="badge b-green">All Residents</span>
+                    <span className="text-xs text2">PDF · 210KB</span>
+                  </div>
+                </div>
+                <div className="doc-card" onClick={() => alert('📄 Opening Major Works Consultation – Phase 1...')}>
+                  <div className="doc-ic">🏗️</div>
+                  <div className="doc-name">Major Works Consultation – Phase 1</div>
+                  <div className="doc-meta">Uploaded 1 Mar 2026</div>
+                  <div className="doc-foot">
+                    <span className="badge b-green">All Residents</span>
+                    <span className="text-xs text2">PDF · 890KB</span>
+                  </div>
+                </div>
+              </div>
+              <div style={{ marginTop: '16px', padding: '14px', background: 'var(--amber2)', border: '1px solid #FDE68A', borderRadius: '10px', fontSize: '13px', color: '#78350F' }}>
+                🔒 <strong>2 additional documents</strong> are available to committee members only. Contact your director if you need access.
+              </div>
+            </div>
+          )}
+
+          {/* Chat Tab */}
+          {activeTab === 'chat' && (
+            <div className="tc on">
+              <p style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '16px' }}>Ask anything about your service charges, lease, AGM decisions, or building documents.</p>
+              <div className="chat-wrap" id="chat-resident">
+                <div className="chat-hd">
+                  <div className="chat-av">🤖</div>
+                  <div>
+                    <div className="chat-ai-name">Resi AI Assistant</div>
+                    <div className="chat-ai-status"><div className="chat-ai-dot"></div>Online · 3 documents indexed</div>
+                  </div>
+                </div>
+                <div className="chat-msgs" id="chat-resident-msgs">
+                  <div className="chat-msg">
+                    <div className="cm-av ai-av">R</div>
+                    <div>
+                      <div className="bubble ai-b">Hello Terry! I'm your Resi AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="chat-sugg" id="chat-resident-sugg">
+                  <div className="sugg-chip">What are my service charges?</div>
+                  <div className="sugg-chip">When is the next AGM?</div>
+                  <div className="sugg-chip">Pets policy?</div>
+                  <div className="sugg-chip">Can I sublet?</div>
+                </div>
+                <div className="chat-input-row">
+                  <input className="chat-in" type="text" placeholder="Ask about your building…" />
+                  <button className="chat-send">➤</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Issues Tab */}
+          {activeTab === 'issues' && (
+            <div className="tc on">
+              <div className="log-form">
+                <h4>➕ Log a New Issue</h4>
+                <div className="fg"><label className="fl">Issue Title</label><input className="fi" type="text" placeholder="e.g. Broken light in corridor, Floor 2" /></div>
+                <div className="fg"><label className="fl">Description</label><textarea className="fi" rows={3} placeholder="Describe the issue in detail…" style={{ resize: 'vertical' }}></textarea></div>
+                <div className="frow">
+                  <div className="fg">
+                    <label className="fl">Category</label>
+                    <select className="fselect">
+                      <option>Maintenance</option><option>Safety</option><option>Communal Area</option><option>Noise</option><option>Other</option>
+                    </select>
+                  </div>
+                  <div className="fg">
+                    <label className="fl">Urgency</label>
+                    <select className="fselect">
+                      <option>Low</option><option>Medium</option><option>High</option><option>Urgent</option>
+                    </select>
+                  </div>
+                </div>
+                <button className="btn btn-primary btn-sm" onClick={() => alert('Issue logged!')}>Submit Issue</button>
+              </div>
+              <div className="card">
+                <div className="card-hd">
+                  <div className="card-title">My Issue Log</div>
+                  <span className="badge b-amber">2 Open</span>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table className="it">
+                    <thead><tr><th>ID</th><th>Issue</th><th>Logged</th><th>Status</th><th>Last Update</th></tr></thead>
+                    <tbody>
+                      {/* Placeholder generic issue */}
+                      <tr>
+                        <td><span className="issue-id">#001</span></td>
+                        <td><div className="issue-title" style={{ fontSize: '13px' }}>Water leak – Flat 4B</div></td>
+                        <td><span className="badge b-gray">12 Apr</span></td>
+                        <td><span className="badge s-progress">In Progress</span></td>
+                        <td>Today</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+}

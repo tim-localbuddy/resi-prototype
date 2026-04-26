@@ -8,18 +8,21 @@ import { ResidentDashboard } from './pages/ResidentDashboard';
 import { CommitteeDashboard } from './pages/CommitteeDashboard';
 import { AgentDashboard } from './pages/AgentDashboard';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { PublicOnlyRoute } from './components/PublicOnlyRoute';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<RootLayout />}>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          
-          {/* Verify page expects AuthContext, so we don't protect it by role, just check if logged in but unverified usually. */}
-          {/* We'll handle exact verification flow inside Verify itself, but it needs standard auth route wrappers */}
+          {/* Public-only routes: redirect to dashboard if already authenticated */}
+          <Route element={<PublicOnlyRoute />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Route>
+
+          {/* Verify page: accessible while logged in but unverified */}
           <Route path="/verify" element={<Verify />} />
 
           {/* Protected Routes using RBAC */}

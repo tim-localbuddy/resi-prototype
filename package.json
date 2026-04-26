@@ -7,9 +7,16 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "firebase:serve": "npm run build --prefix functions && firebase emulators:start",
+    "firebase:deploy": "firebase deploy",
+    "firebase:deploy:functions": "npm run build --prefix functions && firebase deploy --only functions",
+    "firebase:deploy:firestore": "firebase deploy --only firestore",
+    "firebase:deploy:hosting": "npm run build && firebase deploy --only hosting",
+    "functions:build": "npm run build --prefix functions"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
     "firebase": "^12.12.0",
     "lucide-react": "^1.8.0",
     "react": "^19.1.0",

@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Logo } from '../components/Logo';
+import { DocumentsTab } from '../components/DocumentsTab';
 
 export function ResidentDashboard() {
   const navigate = useNavigate();
@@ -9,10 +11,7 @@ export function ResidentDashboard() {
     <div id="view-resident" className="view on" style={{ paddingTop: 0 }}>
       <div className="dash-wrap">
         <aside className="sidebar">
-          <div className="sb-logo">
-            <div className="sb-logo-mark">R</div>
-            <span className="sb-logo-txt">Resi<span>.ai</span></span>
-          </div>
+          <Logo variant="sidebar" />
           <div className="sb-section">
             <div className="sb-sec-label">My Building</div>
             <div className={`sb-item ${activeTab === 'docs' ? 'on' : ''}`} onClick={() => setActiveTab('docs')}>
@@ -59,44 +58,7 @@ export function ResidentDashboard() {
 
           {/* Docs Tab */}
           {activeTab === 'docs' && (
-            <div className="tc on">
-              <div className="alert a-blue">
-                <div className="alert-ic">📋</div>
-                <div><div className="alert-title">Your building documents</div>These are documents your committee has shared with all residents. For further queries, use the AI assistant.</div>
-              </div>
-              <div className="doc-grid">
-                <div className="doc-card" onClick={() => alert('📄 Opening AGM Minutes – November 2025...')}>
-                  <div className="doc-ic">📋</div>
-                  <div className="doc-name">AGM Minutes – November 2025</div>
-                  <div className="doc-meta">Uploaded 20 Nov 2025</div>
-                  <div className="doc-foot">
-                    <span className="badge b-green">All Residents</span>
-                    <span className="text-xs text2">PDF · 340KB</span>
-                  </div>
-                </div>
-                <div className="doc-card" onClick={() => alert('📄 Opening Building Insurance Certificate 2025...')}>
-                  <div className="doc-ic">🛡️</div>
-                  <div className="doc-name">Building Insurance Certificate 2025</div>
-                  <div className="doc-meta">Uploaded 3 Jan 2026</div>
-                  <div className="doc-foot">
-                    <span className="badge b-green">All Residents</span>
-                    <span className="text-xs text2">PDF · 210KB</span>
-                  </div>
-                </div>
-                <div className="doc-card" onClick={() => alert('📄 Opening Major Works Consultation – Phase 1...')}>
-                  <div className="doc-ic">🏗️</div>
-                  <div className="doc-name">Major Works Consultation – Phase 1</div>
-                  <div className="doc-meta">Uploaded 1 Mar 2026</div>
-                  <div className="doc-foot">
-                    <span className="badge b-green">All Residents</span>
-                    <span className="text-xs text2">PDF · 890KB</span>
-                  </div>
-                </div>
-              </div>
-              <div style={{ marginTop: '16px', padding: '14px', background: 'var(--amber2)', border: '1px solid #FDE68A', borderRadius: '10px', fontSize: '13px', color: '#78350F' }}>
-                🔒 <strong>2 additional documents</strong> are available to committee members only. Contact your director if you need access.
-              </div>
-            </div>
+            <DocumentsTab role="resident" />
           )}
 
           {/* Chat Tab */}
@@ -107,7 +69,7 @@ export function ResidentDashboard() {
                 <div className="chat-hd">
                   <div className="chat-av">🤖</div>
                   <div>
-                    <div className="chat-ai-name">Resi AI Assistant</div>
+                    <div className="chat-ai-name">Bofast AI Assistant</div>
                     <div className="chat-ai-status"><div className="chat-ai-dot"></div>Online · 3 documents indexed</div>
                   </div>
                 </div>
@@ -115,7 +77,7 @@ export function ResidentDashboard() {
                   <div className="chat-msg">
                     <div className="cm-av ai-av">R</div>
                     <div>
-                      <div className="bubble ai-b">Hello Terry! I'm your Resi AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?</div>
+                      <div className="bubble ai-b">Hello Terry! I'm the Bofast AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?</div>
                     </div>
                   </div>
                 </div>

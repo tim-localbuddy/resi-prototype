@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { Logo } from '../components/Logo';
 
 export function Landing() {
   const navigate = useNavigate();
@@ -6,10 +7,7 @@ export function Landing() {
   return (
     <div id="view-landing" className="view on" style={{ paddingTop: 0 }}>
       <nav className="lnav">
-        <div className="logo-wrap" onClick={() => navigate('/')}>
-          <div className="logo-mark">R</div>
-          <span className="logo-txt">Resi<span>.ai</span></span>
-        </div>
+        <Logo onClick={() => navigate('/')} />
         <div className="lnav-links">
           <span className="nl">Features</span>
           <span className="nl">Pricing</span>
@@ -21,14 +19,14 @@ export function Landing() {
 
       <div className="hero">
         <div className="hero-badge">🏢 Beta Access Now Open — Founding Members Free</div>
-        <h1>The <span>Digital Operating System</span><br/>for Apartment Communities</h1>
-        <p className="hero-sub">AI-powered transparency for service charges, leases, and governance. Built for resident directors, RTM companies, and managing agents.</p>
+        <h1>The <span>Digital Operating System</span><br />for Apartment Communities</h1>
+        <p className="hero-sub">AI-powered transparency for service charges, leases, and governance. Built for resident directors, Right to Manage (RTM) companies, and managing agents.</p>
         <div className="hero-ctas">
           <button className="btn btn-primary btn-lg" onClick={() => navigate('/register')}>Get Free Beta Access →</button>
           <button className="btn btn-lg" style={{ background: 'rgba(255,255,255,.12)', color: '#fff', border: '1px solid rgba(255,255,255,.2)' }} onClick={() => navigate('/committee')}>View Demo</button>
         </div>
         <div className="hero-trust">
-          <div className="hero-trust-item"><div className="hero-trust-dot"></div>RTM Companies</div>
+          <div className="hero-trust-item"><div className="hero-trust-dot"></div>Right to Manage (RTM) Companies</div>
           <div className="hero-trust-item"><div className="hero-trust-dot"></div>Property Managers</div>
           <div className="hero-trust-item"><div className="hero-trust-dot"></div>Managing Agents</div>
           <div className="hero-trust-item"><div className="hero-trust-dot"></div>Resident Directors</div>
@@ -45,7 +43,7 @@ export function Landing() {
             <div className="feat-card">
               <div className="feat-icon" style={{ background: '#EFF6FF' }}>🤖</div>
               <h3>AI Document Q&amp;A</h3>
-              <p>Ask questions in plain English about your service charge, lease, or AGM minutes. Resi.ai finds the answer and cites its source — no more sifting through 80-page documents.</p>
+              <p>Ask questions in plain English about your service charge, lease, or AGM minutes. Bofast finds the answer and cites its source — no more sifting through 80-page documents.</p>
             </div>
             <div className="feat-card">
               <div className="feat-icon" style={{ background: '#ECFDF5' }}>📁</div>
@@ -94,12 +92,12 @@ export function Landing() {
         <div className="section">
           <div className="section-label">Pricing</div>
           <div className="section-title">Three tiers, built for every block</div>
-          <p className="section-sub">From self-managed RTM buildings to full managing agent portfolios — start free as a founding beta member.</p>
+          <p className="section-sub">From self-managed Right to Manage (RTM) buildings to full managing agent portfolios — start free as a founding beta member.</p>
           <div className="price-grid">
             <div className="price-card">
               <div className="price-tier">Tier 1</div>
-              <div className="price-name">RTM Starter</div>
-              <div className="price-desc">For self-managed RTM companies and small freeholders ready to take control.</div>
+              <div className="price-name">Starter</div>
+              <div className="price-desc">For self-managed Right to Manage (RTM) companies, directors and committee of residents associations and small freeholders ready to take control.</div>
               <div className="price-amount"><sup>£</sup>29<sub>/mo</sub></div>
               <ul className="price-features">
                 <li>AI document Q&amp;A (up to 20 docs)</li>
@@ -155,10 +153,7 @@ export function Landing() {
       </div>
 
       <footer className="footer">
-        <div className="logo-wrap">
-          <div className="sb-logo-mark">R</div>
-          <span className="logo-txt" style={{ color: '#94A3B8', fontSize: '15px' }}>Resi<span>.ai</span></span>
-        </div>
+        <Logo variant="footer" />
         <div className="footer-copy">Part of the LocalBuddy AI Infrastructure Layer · © 2026 LocalBuddy Ltd</div>
         <div className="footer-links">
           <a>Privacy</a><a>Terms</a><a>Contact</a>

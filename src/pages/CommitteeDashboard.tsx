@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Logo } from '../components/Logo';
+import { DocumentsTab } from '../components/DocumentsTab';
 
 export function CommitteeDashboard() {
   const navigate = useNavigate();
@@ -9,10 +11,7 @@ export function CommitteeDashboard() {
     <div id="view-committee" className="view on" style={{ paddingTop: 0 }}>
       <div className="dash-wrap">
         <aside className="sidebar">
-          <div className="sb-logo">
-            <div className="sb-logo-mark">R</div>
-            <span className="sb-logo-txt">Resi<span>.ai</span></span>
-          </div>
+          <Logo variant="sidebar" />
           <div className="sb-section">
             <div className="sb-sec-label">Committee</div>
             <div className={`sb-item ${activeTab === 'overview' ? 'on' : ''}`} onClick={() => setActiveTab('overview')}><span className="ic">📊</span>Overview</div>
@@ -64,7 +63,7 @@ export function CommitteeDashboard() {
               </div>
               <div className="alert a-red">
                 <div className="alert-ic">🤖</div>
-                <div><div className="alert-title">AI Self-Discovered Issue — Lift Maintenance Certificate Overdue</div>Resi.ai has flagged that the lift maintenance certificate in your documents appears to have expired. This has been automatically logged as issue #003. <a style={{ color: 'var(--red)', fontWeight: 700, cursor: 'pointer' }} onClick={() => setActiveTab('issues')}>Review now →</a></div>
+                <div><div className="alert-title">AI Self-Discovered Issue — Lift Maintenance Certificate Overdue</div>Bofast has flagged that the lift maintenance certificate in your documents appears to have expired. This has been automatically logged as issue #003. <a style={{ color: 'var(--red)', fontWeight: 700, cursor: 'pointer' }} onClick={() => setActiveTab('issues')}>Review now →</a></div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                 <div className="card">
@@ -94,7 +93,11 @@ export function CommitteeDashboard() {
             </div>
           )}
 
-          {activeTab !== 'overview' && (
+          {activeTab === 'docs' && (
+            <DocumentsTab role="committee" />
+          )}
+
+          {activeTab !== 'overview' && activeTab !== 'docs' && (
             <div className="tc on" style={{ padding: '24px', textAlign: 'center', color: 'var(--text2)', background: 'var(--surface)', borderRadius: '14px', border: '1px dashed var(--border)' }}>
               <h3>{activeTab} Content</h3>
               <p>Placeholder for the detailed view of this tab.</p>

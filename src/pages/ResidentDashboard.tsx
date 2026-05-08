@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { DocumentsTab } from '../components/DocumentsTab';
+import { ChatTab } from '../components/ChatTab';
 
 export function ResidentDashboard() {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ export function ResidentDashboard() {
             <div className="sb-logout" onClick={() => navigate('/')} title="Sign out">↩</div>
           </div>
         </aside>
-        
+
         <main className="main">
           {/* Welcome Banner */}
           <div style={{ background: 'linear-gradient(135deg,var(--navy),#1e3a8a)', borderRadius: '14px', padding: '24px 28px', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
@@ -63,36 +64,7 @@ export function ResidentDashboard() {
 
           {/* Chat Tab */}
           {activeTab === 'chat' && (
-            <div className="tc on">
-              <p style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '16px' }}>Ask anything about your service charges, lease, AGM decisions, or building documents.</p>
-              <div className="chat-wrap" id="chat-resident">
-                <div className="chat-hd">
-                  <div className="chat-av">🤖</div>
-                  <div>
-                    <div className="chat-ai-name">Bofast AI Assistant</div>
-                    <div className="chat-ai-status"><div className="chat-ai-dot"></div>Online · 3 documents indexed</div>
-                  </div>
-                </div>
-                <div className="chat-msgs" id="chat-resident-msgs">
-                  <div className="chat-msg">
-                    <div className="cm-av ai-av">R</div>
-                    <div>
-                      <div className="bubble ai-b">Hello Terry! I'm the Bofast AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="chat-sugg" id="chat-resident-sugg">
-                  <div className="sugg-chip">What are my service charges?</div>
-                  <div className="sugg-chip">When is the next AGM?</div>
-                  <div className="sugg-chip">Pets policy?</div>
-                  <div className="sugg-chip">Can I sublet?</div>
-                </div>
-                <div className="chat-input-row">
-                  <input className="chat-in" type="text" placeholder="Ask about your building…" />
-                  <button className="chat-send">➤</button>
-                </div>
-              </div>
-            </div>
+            <ChatTab role="resident" />
           )}
 
           {/* Issues Tab */}

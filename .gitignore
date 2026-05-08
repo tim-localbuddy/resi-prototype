@@ -27,3 +27,6 @@ dist-ssr
 .secrets
 .env
 .env.*
+
+# Test Scripts
+.scripts

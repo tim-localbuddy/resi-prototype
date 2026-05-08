@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Logo';
 import { DocumentsTab } from '../components/DocumentsTab';
+import { ChatTab } from '../components/ChatTab';
 
 export function CommitteeDashboard() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export function CommitteeDashboard() {
             <div className="sb-logout" onClick={() => navigate('/')} title="Sign out">↩</div>
           </div>
         </aside>
-        
+
         <main className="main">
           <div className="tab-bar">
             <div className={`tab ${activeTab === 'overview' ? 'on' : ''}`} onClick={() => setActiveTab('overview')}>📊 Overview</div>
@@ -97,11 +98,9 @@ export function CommitteeDashboard() {
             <DocumentsTab role="committee" />
           )}
 
-          {activeTab !== 'overview' && activeTab !== 'docs' && (
-            <div className="tc on" style={{ padding: '24px', textAlign: 'center', color: 'var(--text2)', background: 'var(--surface)', borderRadius: '14px', border: '1px dashed var(--border)' }}>
-              <h3>{activeTab} Content</h3>
-              <p>Placeholder for the detailed view of this tab.</p>
-            </div>
+          {/* Chat Tab */}
+          {activeTab === 'chat' && (
+            <ChatTab role="committee" />
           )}
 
         </main>

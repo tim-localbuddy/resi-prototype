@@ -1,9 +1,9 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import type { AppUser } from '../lib/auth/types';
+import type { UserRole } from '../lib/auth/types';
 
 interface ProtectedRouteProps {
-  allowedRoles?: AppUser['role'][];
+  allowedRoles?: UserRole[];
 }
 
 export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
@@ -28,12 +28,15 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
     return <Navigate to="/verify" replace />;
   }
 
+  const userRoles = Object.values(user.properties || {});
+  const hasAllowedRole = allowedRoles ? userRoles.some(r => allowedRoles.includes(r)) : true;
+
   // Role not allowed
-  if (allowedRoles && (!user.role || !allowedRoles.includes(user.role))) {
-    // Redirect to default dashboard based on role
-    if (user.role === 'resident') return <Navigate to="/resident" replace />;
-    if (user.role === 'director') return <Navigate to="/committee" replace />;
-    if (user.role === 'agent') return <Navigate to="/agent" replace />;
+  if (!hasAllowedRole) {
+    // Redirect to default dashboard based on highest role they do have
+    if (userRoles.includes('agent')) return <Navigate to="/agent" replace />;
+    if (userRoles.includes('director')) return <Navigate to="/committee" replace />;
+    if (userRoles.includes('resident')) return <Navigate to="/resident" replace />;
     
     return <Navigate to="/login" replace />; // Error fallback
   }

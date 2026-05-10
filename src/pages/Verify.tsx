@@ -12,8 +12,9 @@ export function Verify() {
   // Auto redirect if they suddenly become verified
   useEffect(() => {
     if (user?.emailVerified) {
-      if (user.role === 'director') navigate('/committee');
-      else if (user.role === 'agent') navigate('/agent');
+      const roles = Object.values(user.properties || {});
+      if (roles.includes('agent')) navigate('/agent');
+      else if (roles.includes('director')) navigate('/committee');
       else navigate('/resident');
     }
   }, [user, navigate]);

@@ -1,9 +1,12 @@
+export type UserRole = 'resident' | 'director' | 'agent' | 'committee';
+
 export interface AppUser {
   uid: string;
   email: string;
   emailVerified: boolean;
   displayName: string | null;
-  role: 'resident' | 'director' | 'agent' | null;
+  building: string;
+  properties: Record<string, UserRole>;
 }
 
 export interface AuthProvider {

@@ -1,4 +1,4 @@
-import type { AppUser, AuthProvider } from './types';
+import type { AppUser, AuthProvider, UserRole } from './types';
 
 // Mock simple state
 let currentUser: AppUser | null = null;
@@ -14,21 +14,24 @@ const mockUsers: Record<string, AppUser> = {
     email: 'terry.ma@localbuddy.co.uk',
     emailVerified: true,
     displayName: 'Terry Ma',
-    role: 'resident'
+    building: '1a House',
+    properties: { 'property1': 'resident' }
   },
   'emma@committee.com': {
     uid: 'mock-director-123',
     email: 'emma@committee.com',
     emailVerified: true,
     displayName: 'Emma Davies',
-    role: 'director'
+    building: '2b House',
+    properties: { 'property1': 'director' }
   },
   'agent@management.com': {
     uid: 'mock-agent-123',
     email: 'agent@management.com',
     emailVerified: true,
     displayName: 'Agent Portal',
-    role: 'agent'
+    building: '3c House',
+    properties: { 'property1': 'agent' }
   }
 };
 
@@ -42,14 +45,15 @@ export const mockProvider: AuthProvider = {
     }
     throw new Error('auth/invalid-credential');
   },
-  signUpWithEmail: async (email, _pass, role, _building, firstName, lastName) => {
+  signUpWithEmail: async (email, _pass, role, building, firstName, lastName) => {
     await new Promise(r => setTimeout(r, 800));
     const newUser: AppUser = {
       uid: Math.random().toString(36).substring(7),
       email,
       emailVerified: false,
       displayName: `${firstName} ${lastName}`,
-      role: role as AppUser['role']
+      building,
+      properties: { ['property1']: role as UserRole }
     };
     currentUser = newUser;
     notifyListeners();

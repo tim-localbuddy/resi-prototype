@@ -1,16 +1,16 @@
 import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
   sendEmailVerification
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import type { AppUser, AuthProvider } from './types';
+import type { AppUser, AuthProvider, UserRole } from './types';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy",
@@ -29,16 +29,19 @@ const googleProvider = new GoogleAuthProvider();
 async function getUserProfile(uid: string, fallbackEmail: string | null, emailVerified: boolean, displayName: string | null): Promise<AppUser> {
   const docRef = doc(db, 'users', uid);
   const docSnap = await getDoc(docRef);
-  let role: AppUser['role'] = null;
+  let properties: Record<string, UserRole> = {};
+  let building = '';
   if (docSnap.exists()) {
-    role = docSnap.data().role as AppUser['role'];
+    properties = docSnap.data().properties || {};
+    building = docSnap.data().building || '';
   }
   return {
     uid,
     email: fallbackEmail || '',
     emailVerified,
     displayName,
-    role
+    building,
+    properties
   };
 }
 
@@ -49,39 +52,30 @@ export const firebaseProvider: AuthProvider = {
   },
   signUpWithEmail: async (email, pass, role, building, firstName, lastName) => {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    // Write role to firestore
-    let cleanRole = 'resident';
+    let cleanRole: UserRole = 'resident';
     if (role.toLowerCase().includes('director')) cleanRole = 'director';
     if (role.toLowerCase().includes('agent')) cleanRole = 'agent';
-    
+
+    const properties = { ['property1']: cleanRole };
+
     await setDoc(doc(db, 'users', cred.user.uid), {
-      role: cleanRole,
-      building,
+      properties,
       firstName,
-      lastName
+      lastName,
+      building
     });
-    
+
     await sendEmailVerification(cred.user);
     return await getUserProfile(cred.user.uid, cred.user.email, cred.user.emailVerified, `${firstName} ${lastName}`);
   },
   signInWithGoogle: async () => {
     const cred = await signInWithPopup(auth, googleProvider);
-    // Check if they have a role, if not default to resident
     const docRef = doc(db, 'users', cred.user.uid);
     const docSnap = await getDoc(docRef);
-    let role = 'resident';
     if (!docSnap.exists()) {
-      await setDoc(docRef, { role: 'resident' });
-    } else {
-      role = docSnap.data().role || 'resident';
+      await setDoc(docRef, { properties: {} });
     }
-    return {
-      uid: cred.user.uid,
-      email: cred.user.email || '',
-      emailVerified: cred.user.emailVerified,
-      displayName: cred.user.displayName,
-      role: role as AppUser['role']
-    };
+    return await getUserProfile(cred.user.uid, cred.user.email, cred.user.emailVerified, cred.user.displayName);
   },
   signOut: async () => {
     await firebaseSignOut(auth);

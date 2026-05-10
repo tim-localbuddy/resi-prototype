@@ -37,8 +37,9 @@ export function Register() {
       // Google popups generally self-verify email. Route appropriately:
       if (!user.emailVerified) navigate('/verify');
       else {
-        if (user.role === 'director') navigate('/committee');
-        else if (user.role === 'agent') navigate('/agent');
+        const roles = Object.values(user.properties || {});
+        if (roles.includes('agent')) navigate('/agent');
+        else if (roles.includes('director')) navigate('/committee');
         else navigate('/resident');
       }
     } catch (err: any) {

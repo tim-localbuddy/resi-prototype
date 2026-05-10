@@ -99,7 +99,7 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
       ]);
       setSessionId(result.data.sessionId);
       setDynamicSuggestions(result.data.relatedQuestions);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("AI Error:", error);
       setMessages(prev => [
         ...prev,

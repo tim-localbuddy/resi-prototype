@@ -36,7 +36,7 @@ export const askAi = onCall({ region: "europe-west1", cors: true }, async (reque
 
     return {
       reply: response.reply?.summary?.summaryText || "I'm sorry, I couldn't find an answer.",
-      references: response.reply?.summary?.summaryWithMetadata?.references?.map((ref: any) => ({
+      references: response.reply?.summary?.summaryWithMetadata?.references?.map((ref) => ({
         title: ref.title,
         uri: ref.uri
       })) || [],
@@ -44,8 +44,8 @@ export const askAi = onCall({ region: "europe-west1", cors: true }, async (reque
       // Return the real conversation name so the frontend can continue this conversation
       sessionId: response.conversation?.name ?? sessionId,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error in askAi:", error);
-    throw new HttpsError("internal", "AI Assistant failed to respond.", error.message);
+    throw new HttpsError("internal", "AI Assistant failed to respond.", (error as Error).message);
   }
 });

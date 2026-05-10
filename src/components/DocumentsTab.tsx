@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDocuments, getDocumentDownloadUrl, uploadDocument, formatBytes, getFileIcon, formatDate, type DocumentMeta } from '../lib/documents';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../lib/auth/types';
@@ -25,19 +25,21 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
   // Use the specific role the user has for this property, fallback to the prop
   const activeRole = user?.properties?.[propertyId] || role;
 
-  const loadDocs = () => {
-    setLoading(true);
+  const loadDocs = useCallback(() => {
+    // Defer state update to avoid "cascading renders" warning in useEffect
+    Promise.resolve().then(() => setLoading(true));
+    
     fetchDocuments(activeRole, propertyId)
       .then(docs => setDocuments(docs))
-      .catch(err => setError(err.message))
+      .catch(err => setError((err as Error).message))
       .finally(() => setLoading(false));
-  };
+  }, [activeRole, propertyId]);
 
   useEffect(() => {
     if (user) {
       loadDocs();
     }
-  }, [activeRole, user, propertyId]);
+  }, [user, loadDocs]);
 
   const handleDocClick = async (docId: string) => {
     if (downloadingId) return;
@@ -45,8 +47,8 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
       setDownloadingId(docId);
       const url = await getDocumentDownloadUrl(docId);
       window.open(url, '_blank');
-    } catch (err: any) {
-      setError('Failed to open document: ' + err.message);
+    } catch (err: unknown) {
+      setError('Failed to open document: ' + (err as Error).message);
     } finally {
       setDownloadingId(null);
     }
@@ -64,8 +66,8 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
       setIsModalOpen(false);
       setFileToUpload(null);
       loadDocs(); // refresh list
-    } catch (err: any) {
-      alert('Upload failed: ' + err.message);
+    } catch (err: unknown) {
+      alert('Upload failed: ' + (err as Error).message);
     } finally {
       setUploading(false);
     }

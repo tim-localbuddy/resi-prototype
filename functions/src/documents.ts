@@ -2,7 +2,7 @@ import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { db, storage } from "./lib/admin";
 import * as crypto from "crypto";
 
-const BUCKET_NAME = "prj-p-bofast.firebasestorage.app";
+const BUCKET_NAME = "bofast-documents";
 
 async function getUserProfile(uid: string): Promise<{ properties: Record<string, string> }> {
   const doc = await db.collection("users").doc(uid).get();

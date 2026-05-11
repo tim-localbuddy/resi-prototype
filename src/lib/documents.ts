@@ -1,4 +1,4 @@
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { getFunctions, httpsCallable, connectFunctionsEmulator, type Functions } from 'firebase/functions';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
 export interface DocumentMeta {
@@ -14,7 +14,7 @@ export interface DocumentMeta {
   propertyId: string;
 }
 
-let functionsEu: any = null;
+let functionsEu: Functions | null = null;
 
 function getEuFunctions() {
   if (!functionsEu) {
@@ -35,7 +35,7 @@ export async function fetchDocuments(role: string, propertyId: string): Promise<
     where('readAccess', 'array-contains', role),
     where('status', '==', 'ready')
   );
-  
+
   const snapshot = await getDocs(q);
   const docs = snapshot.docs.map(doc => doc.data() as DocumentMeta);
   // Sort by createdAt descending
@@ -50,8 +50,8 @@ export async function getDocumentDownloadUrl(documentId: string): Promise<string
 }
 
 export async function uploadDocument(
-  file: File, 
-  readAccess: string[], 
+  file: File,
+  readAccess: string[],
   writeAccess: string[],
   propertyId: string
 ): Promise<void> {

@@ -67,7 +67,7 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
       setFileToUpload(null);
       loadDocs(); // refresh list
     } catch (err: unknown) {
-      alert('Upload failed: ' + (err as Error).message);
+      alert((err as Error).message);
     } finally {
       setUploading(false);
     }

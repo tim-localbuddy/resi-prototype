@@ -7,9 +7,12 @@ import {
   signInWithPopup,
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
-  sendEmailVerification
+  sendEmailVerification,
+  connectAuthEmulator
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, connectFirestoreEmulator } from 'firebase/firestore';
+import { getStorage, connectStorageEmulator } from 'firebase/storage';
+import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import type { AppUser, AuthProvider, UserRole } from './types';
 
 const firebaseConfig = {
@@ -24,6 +27,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
+export const functionsEu = getFunctions(app, 'europe-west1');
+
+if (import.meta.env.DEV) {
+  connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+  connectFirestoreEmulator(db, '127.0.0.1', 8080);
+  connectStorageEmulator(storage, '127.0.0.1', 9199);
+  connectFunctionsEmulator(functionsEu, '127.0.0.1', 5001);
+}
+
 const googleProvider = new GoogleAuthProvider();
 
 async function getUserProfile(uid: string, fallbackEmail: string | null, emailVerified: boolean, displayName: string | null): Promise<AppUser> {

@@ -59,7 +59,7 @@ export const getUploadUrl = onCall(async (request) => {
     contentType: mimeType
   });
 
-  return { documentId, uploadUrl: url };
+  return { documentId, uploadUrl: url, storagePath: filePath };
 });
 
 export const markDocumentUploaded = onCall(async (request) => {

@@ -1,5 +1,7 @@
-import { getFunctions, httpsCallable, connectFunctionsEmulator, type Functions } from 'firebase/functions';
-import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
+import { httpsCallable } from 'firebase/functions';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { ref as storageRef, uploadBytes } from 'firebase/storage';
+import { db, functionsEu, storage } from './auth/firebaseProvider';
 
 export interface DocumentMeta {
   id: string;
@@ -14,20 +16,7 @@ export interface DocumentMeta {
   propertyId: string;
 }
 
-let functionsEu: Functions | null = null;
-
-function getEuFunctions() {
-  if (!functionsEu) {
-    functionsEu = getFunctions(undefined, 'europe-west1');
-    if (import.meta.env.DEV) {
-      connectFunctionsEmulator(functionsEu, 'localhost', 5001);
-    }
-  }
-  return functionsEu;
-}
-
 export async function fetchDocuments(role: string, propertyId: string): Promise<DocumentMeta[]> {
-  const db = getFirestore();
   // Using array-contains to check if the user's role is in the readAccess array
   const q = query(
     collection(db, 'documents'),
@@ -43,8 +32,7 @@ export async function fetchDocuments(role: string, propertyId: string): Promise<
 }
 
 export async function getDocumentDownloadUrl(documentId: string): Promise<string> {
-  const fns = getEuFunctions();
-  const getDownloadUrl = httpsCallable(fns, 'getDownloadUrl');
+  const getDownloadUrl = httpsCallable(functionsEu, 'getDownloadUrl');
   const result = await getDownloadUrl({ documentId });
   return (result.data as any).url;
 }
@@ -55,9 +43,8 @@ export async function uploadDocument(
   writeAccess: string[],
   propertyId: string
 ): Promise<void> {
-  const fns = getEuFunctions();
-  const getUploadUrl = httpsCallable(fns, 'getUploadUrl');
-  const markUploaded = httpsCallable(fns, 'markDocumentUploaded');
+  const getUploadUrl = httpsCallable(functionsEu, 'getUploadUrl');
+  const markUploaded = httpsCallable(functionsEu, 'markDocumentUploaded');
 
   // 1. Get signed upload URL and document ID
   const result = await getUploadUrl({
@@ -68,19 +55,24 @@ export async function uploadDocument(
     writeAccess,
     propertyId
   });
-  const { documentId, uploadUrl } = result.data as any;
+  const { documentId, uploadUrl, storagePath } = result.data as any;
 
-  // 2. Upload file directly to Storage using the signed URL
-  const uploadRes = await fetch(uploadUrl, {
-    method: 'PUT',
-    body: file,
-    headers: {
-      'Content-Type': file.type || 'application/octet-stream'
+  // 2. Upload file directly to Storage using the client SDK if in development, else signed URL
+  if (import.meta.env.DEV && storagePath) {
+    const fileRef = storageRef(storage, storagePath);
+    await uploadBytes(fileRef, file);
+  } else {
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type || 'application/octet-stream'
+      }
+    });
+
+    if (!uploadRes.ok) {
+      throw new Error(`Upload failed: ${uploadRes.statusText}`);
     }
-  });
-
-  if (!uploadRes.ok) {
-    throw new Error(`Upload failed: ${uploadRes.statusText}`);
   }
 
   // 3. Mark document as ready in Firestore

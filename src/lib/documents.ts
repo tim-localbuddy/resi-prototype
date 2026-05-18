@@ -102,3 +102,8 @@ export function formatDate(dateString: string) {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
+
+export async function deleteDocument(documentId: string): Promise<void> {
+  const deleteDoc = httpsCallable(functionsEu, 'deleteDocument');
+  await deleteDoc({ documentId });
+}

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { fetchDocuments, getDocumentDownloadUrl, uploadDocument, formatBytes, getFileIcon, formatDate, type DocumentMeta } from '../lib/documents';
+import { fetchDocuments, getDocumentDownloadUrl, uploadDocument, deleteDocument, formatBytes, getFileIcon, formatDate, type DocumentMeta } from '../lib/documents';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../lib/auth/types';
 
@@ -12,6 +12,7 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
 
   // Upload modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingDocId, setEditingDocId] = useState<string | null>(null);
   const [fileToUpload, setFileToUpload] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   // Default to everyone can read, only managers can write
@@ -55,7 +56,14 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
   };
 
   const submitUpload = async () => {
-    if (!fileToUpload) return;
+    // If we are only replacing, we require a file.
+    // If we wanted to allow just changing permissions, we could make fileToUpload optional,
+    // but the backend `uploadDocument` expects a file. 
+    // For now, replacing means uploading a new file.
+    if (!fileToUpload) {
+      alert("Please select a file.");
+      return;
+    }
     if (readAccess.length === 0) {
       alert("Please select at least one role for read access.");
       return;
@@ -63,13 +71,43 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
     try {
       setUploading(true);
       await uploadDocument(fileToUpload, readAccess, writeAccess, propertyId);
-      setIsModalOpen(false);
-      setFileToUpload(null);
+      if (editingDocId) {
+        await deleteDocument(editingDocId);
+      }
+      closeModal();
       loadDocs(); // refresh list
     } catch (err: unknown) {
       alert((err as Error).message);
     } finally {
       setUploading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setEditingDocId(null);
+    setFileToUpload(null);
+    setReadAccess(['resident', 'committee', 'director', 'agent']);
+    setWriteAccess(['committee', 'director', 'agent']);
+  };
+
+  const openEditModal = (doc: DocumentMeta, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingDocId(doc.id);
+    setReadAccess(doc.readAccess as UserRole[]);
+    setWriteAccess(doc.writeAccess as UserRole[]);
+    setFileToUpload(null);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteDoc = async (docId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to delete this document?")) return;
+    try {
+      await deleteDocument(docId);
+      loadDocs();
+    } catch (err: unknown) {
+      alert('Failed to delete document: ' + (err as Error).message);
     }
   };
 
@@ -129,7 +167,28 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
                   ) : (
                     <span className="badge b-green">All Residents</span>
                   )}
+                  <div style={{ flex: 1 }} />
                   <span className="text-xs text2">{formatBytes(doc.size)}</span>
+                  {doc.writeAccess.includes(activeRole) && (
+                    <div className="doc-actions" style={{ display: 'flex', gap: '8px', marginLeft: '8px' }}>
+                      <button 
+                        className="btn-icon" 
+                        title="Replace document"
+                        onClick={(e) => openEditModal(doc, e)}
+                        style={{ padding: '2px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '14px' }}
+                      >
+                        ✏️
+                      </button>
+                      <button 
+                        className="btn-icon" 
+                        title="Delete document"
+                        onClick={(e) => handleDeleteDoc(doc.id, e)}
+                        style={{ padding: '2px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '14px' }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             );
@@ -151,7 +210,7 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
       {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: 'var(--bg)', padding: '24px', borderRadius: '12px', width: '400px', maxWidth: '90%' }}>
-            <h3 style={{ marginTop: 0, marginBottom: '16px' }}>Upload Document</h3>
+            <h3 style={{ marginTop: 0, marginBottom: '16px' }}>{editingDocId ? 'Replace Document' : 'Upload Document'}</h3>
 
             <div style={{ marginBottom: '16px' }}>
               <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>File</label>
@@ -179,9 +238,9 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button className="btn btn-secondary" onClick={() => setIsModalOpen(false)} disabled={uploading}>Cancel</button>
+              <button className="btn btn-secondary" onClick={closeModal} disabled={uploading}>Cancel</button>
               <button className="btn btn-primary" onClick={submitUpload} disabled={uploading || !fileToUpload}>
-                {uploading ? 'Uploading...' : 'Upload'}
+                {uploading ? 'Uploading...' : (editingDocId ? 'Replace' : 'Upload')}
               </button>
             </div>
           </div>

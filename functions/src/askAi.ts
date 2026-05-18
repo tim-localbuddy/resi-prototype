@@ -1,5 +1,22 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getDiscoveryClient } from "./lib/utils";
+import { db } from "./lib/admin";
+
+async function getUserProfile(uid: string): Promise<{ properties: Record<string, string> }> {
+  const doc = await db.collection("users").doc(uid).get();
+  if (doc.exists) {
+    const data = doc.data()!;
+    return { properties: data.properties || {} };
+  }
+  return { properties: {} };
+}
+
+// Map of role to their specific Vertex AI Search Engine App ID
+const ROLE_ENGINE_MAP: Record<string, string> = {
+  "resident": "bofast-property1-resident_1779138279729",
+  "committee": "bofast-property1-committee_1779138780050",
+  "agent": "bofast-property1-agent_1779138846826",
+};
 
 export const askAi = onCall({ region: "europe-west1", cors: true }, async (request) => {
   if (!request.auth) {
@@ -17,7 +34,16 @@ export const askAi = onCall({ region: "europe-west1", cors: true }, async (reque
     // Agent Builder config
     const projectId = process.env.GCLOUD_PROJECT || "prj-p-bofast";
     const location = "eu";
-    const engineId = "bofast-custom-search-agent_1777933866483";
+
+    // Retrieve user's role to determine correct Engine ID
+    const profile = await getUserProfile(request.auth.uid);
+    const propertyId = Object.keys(profile.properties)[0] || 'property1';
+    const role = profile.properties[propertyId] || "resident";
+
+    const engineId = ROLE_ENGINE_MAP[role];
+    if (!engineId) {
+      throw new HttpsError("failed-precondition", `No Search Engine configured for role: ${role}`);
+    }
 
     // Build the conversation resource name manually.
     // Using '-' as conversation ID activates auto-session mode —

@@ -134,3 +134,45 @@ export const getDownloadUrl = onCall(async (request) => {
 
   return { url };
 });
+
+export const deleteDocument = onCall(async (request) => {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Must be logged in");
+  }
+
+  const { documentId } = request.data;
+  if (!documentId) {
+    throw new HttpsError("invalid-argument", "Missing documentId");
+  }
+
+  const docRef = db.collection("documents").doc(documentId);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    throw new HttpsError("not-found", "Document not found");
+  }
+
+  const docData = doc.data()!;
+
+  const profile = await getUserProfile(request.auth.uid);
+  const userRoleForProperty = profile.properties[docData.propertyId];
+
+  if (docData.uploadedBy !== request.auth.uid && (!userRoleForProperty || !docData.writeAccess.includes(userRoleForProperty))) {
+    throw new HttpsError("permission-denied", "Cannot delete this document");
+  }
+
+  // Delete from Storage
+  const bucket = storage.bucket(BUCKET_NAME);
+  const file = bucket.file(docData.filePath);
+  try {
+    await file.delete();
+  } catch (err) {
+    // If file doesn't exist in storage, just proceed to delete firestore doc
+    console.warn("Storage file not found or couldn't be deleted:", err);
+  }
+
+  // Delete from Firestore
+  await docRef.delete();
+
+  return { success: true };
+});

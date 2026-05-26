@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
+import { functionsEu } from '../lib/auth/firebaseProvider';
 
 interface ChatMessage {
   from: 'ai' | 'user';
@@ -78,14 +79,13 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
     setIsTyping(true);
 
     try {
-      const functions = getFunctions(undefined, 'europe-west1');
       if (import.meta.env.DEV) {
-        connectFunctionsEmulator(functions, 'localhost', 5001);
+        connectFunctionsEmulator(functionsEu, 'localhost', 5001);
       }
       const askAi = httpsCallable<
         { query: string; sessionId: string | null },
         { reply: string; sessionId: string; references: Array<{ title: string; uri: string }>; relatedQuestions: string[] }
-      >(functions, 'askAi');
+      >(functionsEu, 'askAi');
 
       const result = await askAi({ query: trimmed, sessionId });
 
@@ -136,38 +136,32 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
             msg.from === 'ai' ? (
               <div key={i} className="chat-msg">
                 <div className="cm-av ai-av">{cfg.avatarInitial}</div>
-                <div>
-                  <div className="bubble ai-b">
-                    {msg.text}
-                    {msg.references && msg.references.length > 0 && (
-                      <div className="chat-refs">
-                        <div className="refs-title">References:</div>
-                        {msg.references.map((ref, idx) => (
-                          <a key={idx} href={ref.uri} target="_blank" rel="noopener noreferrer" className="ref-link">
-                            📄 {ref.title || 'Document'}
-                          </a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                <div className="bubble ai-b">
+                  {msg.text}
+                  {msg.references && msg.references.length > 0 && (
+                    <div className="chat-refs">
+                      <div className="refs-title">References:</div>
+                      {msg.references.map((ref, idx) => (
+                        <a key={idx} href={ref.uri} target="_blank" rel="noopener noreferrer" className="ref-link">
+                          📄 {ref.title || 'Document'}
+                        </a>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (
               <div key={i} className="chat-msg user-msg">
                 <div className="cm-av usr-av">Me</div>
-                <div>
-                  <div className="bubble usr-b">{msg.text}</div>
-                </div>
+                <div className="bubble usr-b">{msg.text}</div>
               </div>
             )
           )}
           {isTyping && (
             <div className="chat-msg">
               <div className="cm-av ai-av">{cfg.avatarInitial}</div>
-              <div>
-                <div className="bubble ai-b" style={{ opacity: 0.6 }}>
-                  <span className="typing-dots">Thinking…</span>
-                </div>
+              <div className="bubble ai-b" style={{ opacity: 0.6 }}>
+                <span className="typing-dots">Thinking…</span>
               </div>
             </div>
           )}

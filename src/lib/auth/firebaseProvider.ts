@@ -24,7 +24,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || "dummy"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = import.meta.env.DEV ? initializeApp(firebaseConfig) : initializeApp();
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);

@@ -13,7 +13,10 @@ const ROLE_DATASTORE_MAP: Record<string, string> = {
   "agent": "bofast-property1-agent-docs_1779138870420",
 };
 
-export const syncDocumentToDatastore = onDocumentWritten("documents/{docId}", async (event) => {
+export const syncDocumentToDatastore = onDocumentWritten({
+  document: "documents/{docId}",
+  memory: "512MiB",
+}, async (event) => {
   const after = event.data?.after;
   const before = event.data?.before;
 
@@ -105,7 +108,10 @@ export const syncDocumentToDatastore = onDocumentWritten("documents/{docId}", as
         try {
           const [operation] = await client.importDocuments({
             parent: branchName,
-            gcsSource: { inputUris: [gcsUri] },
+            gcsSource: { 
+              inputUris: [gcsUri],
+              dataSchema: "content"
+            },
             reconciliationMode: "INCREMENTAL",
           });
           console.log(`Import operation started for ${gcsUri} in ${branchName}: ${operation.name}`);

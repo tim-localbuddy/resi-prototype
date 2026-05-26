@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getDiscoveryClient } from "./lib/utils";
-import { db } from "./lib/admin";
+import { db, storage } from "./lib/admin";
 
 async function getUserProfile(uid: string): Promise<{ properties: Record<string, string> }> {
   const doc = await db.collection("users").doc(uid).get();
@@ -15,10 +15,13 @@ async function getUserProfile(uid: string): Promise<{ properties: Record<string,
 const ROLE_ENGINE_MAP: Record<string, string> = {
   "resident": "bofast-property1-resident_1779138279729",
   "committee": "bofast-property1-committee_1779138780050",
+  "director": "bofast-property1-committee_1779138780050",
   "agent": "bofast-property1-agent_1779138846826",
 };
 
-export const askAi = onCall({ region: "europe-west1", cors: true }, async (request) => {
+export const askAi = onCall({
+  memory: "512MiB",
+}, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "User must be authenticated to use AI.");
   }
@@ -60,12 +63,43 @@ export const askAi = onCall({ region: "europe-west1", cors: true }, async (reque
       },
     });
 
+    const rawReferences = response.reply?.summary?.summaryWithMetadata?.references || [];
+    const references = await Promise.all(
+      rawReferences.map(async (ref) => {
+        let uri = ref.uri;
+        if (uri && uri.startsWith("gs://")) {
+          try {
+            const parts = uri.replace("gs://", "").split("/");
+            const bucketName = parts[0];
+            const filePath = parts.slice(1).join("/");
+            
+            if (process.env.FUNCTIONS_EMULATOR === "true") {
+              const host = process.env.STORAGE_EMULATOR_HOST || "http://127.0.0.1:9199";
+              uri = `${host}/v0/b/${bucketName}/o/${encodeURIComponent('/' + filePath)}?alt=media`;
+            } else {
+              const bucket = storage.bucket(bucketName);
+              const file = bucket.file(filePath);
+              const [signedUrl] = await file.getSignedUrl({
+                version: 'v4',
+                action: 'read',
+                expires: Date.now() + 60 * 60 * 1000, // 1 hour
+              });
+              uri = signedUrl;
+            }
+          } catch (e) {
+            console.error("Failed to generate signed url for reference", uri, e);
+          }
+        }
+        return {
+          title: ref.title,
+          uri: uri
+        };
+      })
+    );
+
     return {
       reply: response.reply?.summary?.summaryText || "I'm sorry, I couldn't find an answer.",
-      references: response.reply?.summary?.summaryWithMetadata?.references?.map((ref) => ({
-        title: ref.title,
-        uri: ref.uri
-      })) || [],
+      references,
       relatedQuestions: response.relatedQuestions || [],
       // Return the real conversation name so the frontend can continue this conversation
       sessionId: response.conversation?.name ?? sessionId,

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Ensure you are logged in and have the correct project selected
+gcloud auth login
+gcloud config set project prj-p-bofast
+
 PROJECT_ID="prj-p-bofast"
 BUCKET="bofast-documents"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)

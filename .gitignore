@@ -31,3 +31,6 @@ functions/data/seed
 
 # Test Scripts
 .scripts
+
+# Firebase
+.firebase

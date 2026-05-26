@@ -64,6 +64,7 @@ export async function uploadDocument(
   } else {
     const uploadRes = await fetch(uploadUrl, {
       method: 'PUT',
+      mode: 'cors',
       body: file,
       headers: {
         'Content-Type': file.type || 'application/octet-stream'

@@ -3,25 +3,19 @@ import * as path from "path";
 import * as fs from "fs";
 
 export async function getDiscoveryClient() {
-  const keyPath = path.join(__dirname, "../../../.secrets", "service-account.json");
-  if (!fs.existsSync(keyPath)) {
-    throw new Error("service-account.json not found");
-  }
+  const keyPath = path.join(__dirname, "../../.secrets", "service-account.json");
 
   return new v1beta.ConversationalSearchServiceClient({
-    keyFilename: keyPath,
+    keyFilename: fs.existsSync(keyPath) ? keyPath : undefined,
     apiEndpoint: "eu-discoveryengine.googleapis.com",
   });
 }
 
 export async function getDocumentServiceClient() {
   const keyPath = path.join(__dirname, "../../../.secrets", "service-account.json");
-  if (!fs.existsSync(keyPath)) {
-    throw new Error("service-account.json not found");
-  }
 
   return new v1beta.DocumentServiceClient({
-    keyFilename: keyPath,
+    keyFilename: fs.existsSync(keyPath) ? keyPath : undefined,
     apiEndpoint: "eu-discoveryengine.googleapis.com",
   });
 }

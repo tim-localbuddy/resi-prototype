@@ -7,7 +7,7 @@ const BUCKET_NAME = 'bofast-documents';
 
 // 1. Setup Cloud Storage (Bypassing Firebase Admin to ignore emulator env var)
 const cloudStorage = new Storage({
-  keyFilename: path.join(__dirname, "../../.secrets", "service-account.json")
+  keyFilename: path.join(__dirname, "../.secrets", "service-account.json")
 });
 const cloudBucket = cloudStorage.bucket(BUCKET_NAME);
 

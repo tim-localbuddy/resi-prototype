@@ -13,7 +13,7 @@ async function getUserProfile(uid: string): Promise<{ properties: Record<string,
   return { properties: {} };
 }
 
-export const getUploadUrl = onCall(async (request) => {
+export const getUploadUrl = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be logged in");
   }
@@ -62,7 +62,7 @@ export const getUploadUrl = onCall(async (request) => {
   return { documentId, uploadUrl: url, storagePath: filePath };
 });
 
-export const markDocumentUploaded = onCall(async (request) => {
+export const markDocumentUploaded = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be logged in");
   }
@@ -92,7 +92,7 @@ export const markDocumentUploaded = onCall(async (request) => {
   return { success: true };
 });
 
-export const getDownloadUrl = onCall(async (request) => {
+export const getDownloadUrl = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be logged in");
   }
@@ -135,7 +135,7 @@ export const getDownloadUrl = onCall(async (request) => {
   return { url };
 });
 
-export const deleteDocument = onCall(async (request) => {
+export const deleteDocument = onCall({ cors: true }, async (request) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be logged in");
   }

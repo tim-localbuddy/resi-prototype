@@ -281,3 +281,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .bstat{text-align:center}
 .bstat-val{font-size:22px;font-weight:800;color:var(--navy)}
 .bstat-lbl{font-size:11px;color:var(--text2)}
+
+/* MARKDOWN STYLES */
+.markdown-body p { margin-bottom: 8px; }
+.markdown-body p:last-child { margin-bottom: 0; }
+.markdown-body ul, .markdown-body ol { margin-left: 20px; margin-bottom: 8px; }
+.markdown-body li { margin-bottom: 4px; }
+.markdown-body strong { font-weight: 700; }

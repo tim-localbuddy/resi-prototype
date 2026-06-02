@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { functionsEu } from '../lib/auth/firebaseProvider';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface ChatMessage {
   from: 'ai' | 'user';
@@ -18,7 +20,6 @@ const CONFIG = {
     subtitle: 'Ask anything about your service charges, lease, AGM decisions, or building documents.',
     greeting: "Hello Terry! I'm the Bofast AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?",
     avatarInitial: 'T',
-    statusText: 'Online · 3 documents indexed',
     suggestions: [
       'What are my service charges?',
       'When is the next AGM?',
@@ -31,7 +32,6 @@ const CONFIG = {
     subtitle: 'Ask anything about building compliance, resident issues, service charges, or governance documents.',
     greeting: "Hello Emma! I'm the Bofast AI assistant for Maple House. I have access to all building documents including committee-only files, AGM minutes, and maintenance records. How can I help?",
     avatarInitial: 'E',
-    statusText: 'Online · 5 documents indexed',
     suggestions: [
       'Summarise the service charge breakdown',
       'Any compliance issues to flag?',
@@ -44,7 +44,6 @@ const CONFIG = {
     subtitle: 'Query documents, compliance data, and resident information across all buildings you manage.',
     greeting: "Hello! I'm the Bofast AI assistant. I have access to all managed buildings and their documents. What would you like to know?",
     avatarInitial: 'A',
-    statusText: 'Online · All documents indexed',
     suggestions: [
       'List buildings with open issues',
       'Any overdue compliance certificates?',
@@ -64,6 +63,23 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([...cfg.suggestions]);
   const msgsRef = useRef<HTMLDivElement>(null);
+  const [aiStatus, setAiStatus] = useState<{ status: string; documentCount: number } | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStatus = async () => {
+      try {
+        const getAiStatusFn = httpsCallable<void, { status: string; documentCount: number }>(functionsEu, 'getAiStatus');
+        const result = await getAiStatusFn();
+        if (isMounted) setAiStatus(result.data);
+      } catch (e) {
+        console.error(e);
+        if (isMounted) setAiStatus({ status: 'Offline', documentCount: 0 });
+      }
+    };
+    fetchStatus();
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     if (msgsRef.current) {
@@ -125,8 +141,8 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
           <div>
             <div className="chat-ai-name">Bofast AI Assistant</div>
             <div className="chat-ai-status">
-              <div className="chat-ai-dot"></div>
-              {cfg.statusText}
+              <div className={`chat-ai-dot ${aiStatus?.status === 'Offline' ? 'offline' : ''}`}></div>
+              {aiStatus ? `${aiStatus.status} · ${aiStatus.documentCount} document${aiStatus.documentCount === 1 ? '' : 's'} indexed` : 'Connecting...'}
             </div>
           </div>
         </div>
@@ -137,11 +153,15 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
               <div key={i} className="chat-msg">
                 <div className="cm-av ai-av">{cfg.avatarInitial}</div>
                 <div className="bubble ai-b">
-                  {msg.text}
+                  <div className="markdown-body">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {msg.text}
+                    </ReactMarkdown>
+                  </div>
                   {msg.references && msg.references.length > 0 && (
                     <div className="chat-refs">
                       <div className="refs-title">References:</div>
-                      {msg.references.map((ref, idx) => (
+                      {Array.from(new Map(msg.references.map(r => [r.uri, r])).values()).map((ref, idx) => (
                         <a key={idx} href={ref.uri} target="_blank" rel="noopener noreferrer" className="ref-link">
                           📄 {ref.title || 'Document'}
                         </a>

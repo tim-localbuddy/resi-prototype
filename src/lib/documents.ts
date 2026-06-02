@@ -1,5 +1,5 @@
 import { httpsCallable } from 'firebase/functions';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { collection, query, where, getDocs, or, and } from 'firebase/firestore';
 import { ref as storageRef, uploadBytes } from 'firebase/storage';
 import { db, functionsEu, storage } from './auth/firebaseProvider';
 
@@ -17,12 +17,17 @@ export interface DocumentMeta {
 }
 
 export async function fetchDocuments(role: string, propertyId: string): Promise<DocumentMeta[]> {
-  // Using array-contains to check if the user's role is in the readAccess array
+  // Using array-contains to check if the user's role is in the readAccess or writeAccess array
   const q = query(
     collection(db, 'documents'),
-    where('propertyId', '==', propertyId),
-    where('readAccess', 'array-contains', role),
-    where('status', '==', 'ready')
+    and(
+      where('propertyId', '==', propertyId),
+      or(
+        where('readAccess', 'array-contains', role),
+        where('writeAccess', 'array-contains', role)
+      ),
+      where('status', '==', 'ready')
+    )
   );
 
   const snapshot = await getDocs(q);

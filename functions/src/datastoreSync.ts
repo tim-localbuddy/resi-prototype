@@ -10,6 +10,7 @@ const BUCKET_NAME = "bofast-documents";
 const ROLE_DATASTORE_MAP: Record<string, string> = {
   "resident": "bofast-property1-resident-docs_1779138306070",
   "committee": "bofast-property1-committee-docs_1779138805580",
+  "director": "bofast-property1-committee-docs_1779138805580",
   "agent": "bofast-property1-agent-docs_1779138870420",
 };
 
@@ -52,7 +53,7 @@ export const syncDocumentToDatastore = onDocumentWritten({
 
     try {
       const gcsUri = `gs://${BUCKET_NAME}/${docData.filePath}`;
-      const docId = crypto.createHash("md5").update(gcsUri).digest("hex");
+      const docId = crypto.createHash("sha256").update(gcsUri).digest("hex").substring(0, 32);
 
       const branchNames = getBranchNamesForRoles(docData.readAccess || []);
 
@@ -63,7 +64,11 @@ export const syncDocumentToDatastore = onDocumentWritten({
           await client.deleteDocument({ name: documentName });
           console.log(`Successfully deleted ${documentName}`);
         } catch (err: any) {
-          console.warn(`Failed to delete document from Data Store ${branchName}:`, err.message);
+          if (err.code === 5 || err.message.includes('NOT_FOUND')) {
+            console.log(`Document ${documentName} already removed from Data Store.`);
+          } else {
+            console.warn(`Failed to delete document from Data Store ${branchName}:`, err.message);
+          }
         }
       });
 
@@ -123,7 +128,7 @@ export const syncDocumentToDatastore = onDocumentWritten({
       // 2. Remove from roles that lost access
       if (rolesToRemove.length > 0) {
         const removeBranchNames = getBranchNamesForRoles(rolesToRemove);
-        const docId = crypto.createHash("md5").update(gcsUri).digest("hex");
+        const docId = crypto.createHash("sha256").update(gcsUri).digest("hex").substring(0, 32);
 
         for (const branchName of removeBranchNames) {
           const documentName = `${branchName}/documents/${docId}`;
@@ -131,7 +136,11 @@ export const syncDocumentToDatastore = onDocumentWritten({
             await client.deleteDocument({ name: documentName });
             console.log(`Successfully removed access for ${documentName}`);
           } catch (err: any) {
-            console.warn(`Failed to remove access from Data Store ${branchName}:`, err.message);
+            if (err.code === 5 || err.message.includes('NOT_FOUND')) {
+              console.log(`Document ${documentName} already removed from Data Store.`);
+            } else {
+              console.warn(`Failed to remove access from Data Store ${branchName}:`, err.message);
+            }
           }
         }
       }

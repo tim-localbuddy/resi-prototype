@@ -137,7 +137,7 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
       </p>
       <div className="chat-wrap" id={cfg.chatId}>
         <div className="chat-hd">
-          <div className="chat-av">🤖</div>
+          <div className="chat-av">💬✨</div>
           <div>
             <div className="chat-ai-name">Bofast AI Assistant</div>
             <div className="chat-ai-status">

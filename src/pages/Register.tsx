@@ -37,10 +37,7 @@ export function Register() {
       // Google popups generally self-verify email. Route appropriately:
       if (!user.emailVerified) navigate('/verify');
       else {
-        const roles = Object.values(user.properties || {});
-        if (roles.includes('agent')) navigate('/agent');
-        else if (roles.includes('director')) navigate('/committee');
-        else navigate('/resident');
+        navigate('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Failed to sign up with Google.');

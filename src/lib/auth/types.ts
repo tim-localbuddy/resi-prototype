@@ -4,7 +4,8 @@ export interface AppUser {
   uid: string;
   email: string;
   emailVerified: boolean;
-  displayName: string | null;
+  firstName: string;
+  lastName: string;
   building: string;
   properties: Record<string, UserRole>;
 }
@@ -16,4 +17,6 @@ export interface AuthProvider {
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>;
   onAuthStateChanged: (callback: (user: AppUser | null) => void) => () => void;
+  updateProfileDetails: (firstName: string, lastName: string, building: string) => Promise<AppUser>;
+  updateUserPassword: (newPassword: string) => Promise<void>;
 }

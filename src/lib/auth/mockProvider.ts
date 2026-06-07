@@ -13,7 +13,8 @@ const mockUsers: Record<string, AppUser> = {
     uid: 'mock-resident-123',
     email: 'terry.ma@localbuddy.co.uk',
     emailVerified: true,
-    displayName: 'Terry Ma',
+    firstName: 'Terry',
+    lastName: 'Ma',
     building: '1a House',
     properties: { 'property1': 'resident' }
   },
@@ -21,7 +22,8 @@ const mockUsers: Record<string, AppUser> = {
     uid: 'mock-director-123',
     email: 'emma@committee.com',
     emailVerified: true,
-    displayName: 'Emma Davies',
+    firstName: 'Emma',
+    lastName: 'Davies',
     building: '2b House',
     properties: { 'property1': 'director' }
   },
@@ -29,7 +31,8 @@ const mockUsers: Record<string, AppUser> = {
     uid: 'mock-agent-123',
     email: 'agent@management.com',
     emailVerified: true,
-    displayName: 'Agent Portal',
+    firstName: 'Agent',
+    lastName: 'Portal',
     building: '3c House',
     properties: { 'property1': 'agent' }
   }
@@ -51,7 +54,8 @@ export const mockProvider: AuthProvider = {
       uid: Math.random().toString(36).substring(7),
       email,
       emailVerified: false,
-      displayName: `${firstName} ${lastName}`,
+      firstName,
+      lastName,
       building,
       properties: { ['property1']: role as UserRole }
     };
@@ -84,5 +88,24 @@ export const mockProvider: AuthProvider = {
     return () => {
       listeners = listeners.filter(fn => fn !== callback);
     };
+  },
+  updateProfileDetails: async (firstName, lastName, building) => {
+    await new Promise(r => setTimeout(r, 800));
+    if (currentUser) {
+      currentUser = {
+        ...currentUser,
+        firstName,
+        lastName,
+        building
+      };
+      notifyListeners();
+      return currentUser;
+    }
+    throw new Error('Not authenticated');
+  },
+  updateUserPassword: async (_newPassword) => {
+    await new Promise(r => setTimeout(r, 800));
+    if (!currentUser) throw new Error('Not authenticated');
+    // In a real mock we might check current password, but here we just simulate success.
   }
 };

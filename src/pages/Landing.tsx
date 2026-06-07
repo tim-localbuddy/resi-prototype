@@ -41,7 +41,7 @@ export function Landing() {
           <p className="section-sub">From AI-decoded service charges to real-time issue accountability — built for transparency at every level.</p>
           <div className="feat-grid">
             <div className="feat-card">
-              <div className="feat-icon" style={{ background: '#EFF6FF' }}>🤖</div>
+              <div className="feat-icon" style={{ background: '#EFF6FF' }}>💬✨</div>
               <h3>AI Document Q&amp;A</h3>
               <p>Ask questions in plain English about your service charge, lease, or AGM minutes. Bofast finds the answer and cites its source — no more sifting through 80-page documents.</p>
             </div>

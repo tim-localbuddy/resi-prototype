@@ -18,10 +18,7 @@ export function PublicOnlyRoute() {
   }
 
   if (user && user.emailVerified) {
-    const roles = Object.values(user.properties || {});
-    if (roles.includes('agent')) return <Navigate to="/agent" replace />;
-    if (roles.includes('director')) return <Navigate to="/committee" replace />;
-    return <Navigate to="/resident" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

@@ -10,12 +10,7 @@ export function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const routeByProperties = (properties: Record<string, string>) => {
-    const roles = Object.values(properties);
-    if (roles.includes('agent')) navigate('/agent');
-    else if (roles.includes('director')) navigate('/committee');
-    else navigate('/resident');
-  };
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +23,7 @@ export function Login() {
       if (!user.emailVerified) {
         navigate('/verify');
       } else {
-        routeByProperties(user.properties);
+        navigate('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in.');
@@ -45,7 +40,7 @@ export function Login() {
       if (!user.emailVerified) {
         navigate('/verify');
       } else {
-        routeByProperties(user.properties);
+        navigate('/dashboard');
       }
     } catch (err: any) {
       setError(err.message || 'Failed to sign in with Google.');

@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, NavLink } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import { Logo } from './Logo';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
@@ -20,9 +20,15 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
     {
       label: 'Portfolio',
       items: [
-        { icon: '🏢', label: 'Buildings', path: '/agent/buildings' },
-        { icon: '📁', label: 'Documents', path: '/agent/docs' },
-        { icon: '🔍', label: 'All Issues', path: '/agent/issues' },
+        { icon: '🏢', label: 'Buildings', path: '/dashboard/buildings' },
+        { icon: '📁', label: 'Documents', path: '/dashboard/docs' },
+        { icon: '🔍', label: 'All Issues', path: '/dashboard/issues' },
+      ]
+    },
+    {
+      label: 'Account',
+      items: [
+        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
       ]
     }
   ],
@@ -30,18 +36,18 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
     {
       label: 'Committee',
       items: [
-        { icon: '📊', label: 'Overview', path: '/committee/overview' },
-        { icon: '📁', label: 'Documents', path: '/committee/docs' },
-        { icon: '🤖', label: 'AI Assistant', path: '/committee/chat' },
-        { icon: '🔍', label: 'Issue Log', badge: 3, path: '/committee/issues' },
-        { icon: '📅', label: 'Governance', path: '/committee/timeline' },
+        { icon: '📊', label: 'Overview', path: '/dashboard/overview' },
+        { icon: '📁', label: 'Documents', path: '/dashboard/docs' },
+        { icon: '✨', label: 'AI Assistant', path: '/dashboard/chat' },
+        { icon: '🔍', label: 'Issue Log', badge: 3, path: '/dashboard/issues' },
+        { icon: '📅', label: 'Governance', path: '/dashboard/timeline' },
       ]
     },
     {
       label: 'Admin',
       items: [
-        { icon: '👥', label: 'Residents', path: '/committee/residents' },
-        { icon: '⚙️', label: 'Settings', path: '/login' },
+        { icon: '👥', label: 'Residents', path: '/dashboard/residents' },
+        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
       ]
     }
   ],
@@ -49,15 +55,15 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
     {
       label: 'My Building',
       items: [
-        { icon: '📁', label: 'Documents', path: '/resident/docs' },
-        { icon: '🤖', label: 'Ask AI', path: '/resident/chat' },
-        { icon: '🔍', label: 'Issue Log', badge: 2, path: '/resident/issues' },
+        { icon: '📁', label: 'Documents', path: '/dashboard/docs' },
+        { icon: '✨', label: 'Ask AI', path: '/dashboard/chat' },
+        { icon: '🔍', label: 'Issue Log', badge: 2, path: '/dashboard/issues' },
       ]
     },
     {
       label: 'Account',
       items: [
-        { icon: '⚙️', label: 'Settings', path: '/login' },
+        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
       ]
     }
   ],
@@ -70,7 +76,6 @@ const avatarColors: Record<string, string> = {
 
 export function Sidebar() {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user } = useAuth();
 
   const handleSignOut = async () => {
@@ -78,12 +83,16 @@ export function Sidebar() {
     navigate('/');
   };
 
-  const basePath = location.pathname.split('/').filter(Boolean)[0] || '';
-  const sections = sectionsByRole[basePath] || [];
-  const avatarBg = avatarColors[basePath] || '';
+  const roles = Object.values(user?.properties || {});
+  let activeRole = 'resident';
+  if (roles.includes('agent')) activeRole = 'agent';
+  else if (roles.includes('director')) activeRole = 'committee';
+  
+  const sections = sectionsByRole[activeRole] || [];
+  const avatarBg = avatarColors[activeRole] || '';
 
-  const displayName = user?.displayName || user?.email || 'User';
-  const initials = displayName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
+  const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';
+  const initials = fullName.split(' ').map((n: string) => n[0]).join('').substring(0, 2).toUpperCase();
 
   const getRoleDisplay = () => {
     if (!user?.properties) return '';
@@ -96,7 +105,7 @@ export function Sidebar() {
   return (
     <aside className="sidebar">
       <Logo variant="sidebar" />
-      
+
       {sections.map((section, idx) => (
         <div key={idx} className="sb-section">
           <div className="sb-sec-label">{section.label}</div>
@@ -120,7 +129,7 @@ export function Sidebar() {
           {initials}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="sb-uname" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayName}</div>
+          <div className="sb-uname" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fullName}</div>
           <div className="sb-urole" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getRoleDisplay()}</div>
         </div>
         <div className="sb-logout" onClick={handleSignOut} title="Sign out" style={{ cursor: 'pointer' }}>↩</div>

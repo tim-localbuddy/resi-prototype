@@ -31,14 +31,11 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
   const userRoles = Object.values(user.properties || {});
   const hasAllowedRole = allowedRoles ? userRoles.some(r => allowedRoles.includes(r)) : true;
 
-  // Role not allowed
+  // Role not allowed (if we actually passed allowedRoles and they didn't have it)
+  // For now, since everything is under /dashboard, we might not even need this, 
+  // but if they hit a route they shouldn't, we can just send them to /dashboard
   if (!hasAllowedRole) {
-    // Redirect to default dashboard based on highest role they do have
-    if (userRoles.includes('agent')) return <Navigate to="/agent" replace />;
-    if (userRoles.includes('director')) return <Navigate to="/committee" replace />;
-    if (userRoles.includes('resident')) return <Navigate to="/resident" replace />;
-    
-    return <Navigate to="/login" replace />; // Error fallback
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;

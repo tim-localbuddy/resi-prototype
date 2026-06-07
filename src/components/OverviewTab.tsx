@@ -18,7 +18,7 @@ export function OverviewTab() {
         <div><div className="alert-title">Weekly Reminder — 2 issues unresolved for 7+ days</div>Issues #001 (10 days) and #002 (7 days) remain open. The management agent has been automatically reminded. <Link to="/committee/issues" style={{ color: 'var(--amber)', fontWeight: 700, textDecoration: 'none' }}>View issue log →</Link></div>
       </div>
       <div className="alert a-red">
-        <div className="alert-ic">🤖</div>
+        <div className="alert-ic">💬✨</div>
         <div><div className="alert-title">AI Self-Discovered Issue — Lift Maintenance Certificate Overdue</div>Bofast has flagged that the lift maintenance certificate in your documents appears to have expired. This has been automatically logged as issue #003. <Link to="/committee/issues" style={{ color: 'var(--red)', fontWeight: 700, textDecoration: 'none' }}>Review now →</Link></div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
@@ -29,7 +29,7 @@ export function OverviewTab() {
               <tbody>
                 <tr><td><span className="issue-id">#001</span></td><td><div className="issue-title" style={{ fontSize: '12px' }}>Water leak – Flat 4B</div></td><td><span className="badge s-progress">In Progress</span></td></tr>
                 <tr><td><span className="issue-id">#002</span></td><td><div className="issue-title" style={{ fontSize: '12px' }}>Broken intercom</div></td><td><span className="badge s-open">Open</span></td></tr>
-                <tr><td><span className="issue-id">#003</span></td><td><div className="issue-title" style={{ fontSize: '12px' }}>Lift cert overdue 🤖</div></td><td><span className="badge s-open">Open</span></td></tr>
+                <tr><td><span className="issue-id">#003</span></td><td><div className="issue-title" style={{ fontSize: '12px' }}>Lift cert overdue 💬✨</div></td><td><span className="badge s-open">Open</span></td></tr>
               </tbody>
             </table>
           </div>

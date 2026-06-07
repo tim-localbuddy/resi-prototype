@@ -8,9 +8,11 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged as firebaseOnAuthStateChanged,
   sendEmailVerification,
-  connectAuthEmulator
+  connectAuthEmulator,
+  updatePassword,
+  updateProfile
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, connectFirestoreEmulator } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, updateDoc, connectFirestoreEmulator } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 import type { AppUser, AuthProvider, UserRole } from './types';
@@ -44,15 +46,21 @@ async function getUserProfile(uid: string, fallbackEmail: string | null, emailVe
   const docSnap = await getDoc(docRef);
   let properties: Record<string, UserRole> = {};
   let building = '';
+  let firstName = '';
+  let lastName = '';
   if (docSnap.exists()) {
-    properties = docSnap.data().properties || {};
-    building = docSnap.data().building || '';
+    const data = docSnap.data();
+    properties = data.properties || {};
+    building = data.building || '';
+    firstName = data.firstName || displayName?.split(' ')[0] || '';
+    lastName = data.lastName || displayName?.split(' ').slice(1).join(' ') || '';
   }
   return {
     uid,
     email: fallbackEmail || '',
     emailVerified,
-    displayName,
+    firstName,
+    lastName,
     building,
     properties
   };
@@ -107,5 +115,27 @@ export const firebaseProvider: AuthProvider = {
         callback(null);
       }
     });
+  },
+  updateProfileDetails: async (firstName: string, lastName: string, building: string) => {
+    if (!auth.currentUser) throw new Error('Not authenticated');
+    
+    const displayName = `${firstName} ${lastName}`;
+    
+    // Update Firebase Auth profile
+    await updateProfile(auth.currentUser, { displayName });
+    
+    // Update Firestore document
+    const docRef = doc(db, 'users', auth.currentUser.uid);
+    await updateDoc(docRef, {
+      firstName,
+      lastName,
+      building
+    });
+    
+    return await getUserProfile(auth.currentUser.uid, auth.currentUser.email, auth.currentUser.emailVerified, displayName);
+  },
+  updateUserPassword: async (newPassword: string) => {
+    if (!auth.currentUser) throw new Error('Not authenticated');
+    await updatePassword(auth.currentUser, newPassword);
   }
 };

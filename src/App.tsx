@@ -34,8 +34,11 @@ function App() {
 
           {/* Unified Dashboard */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard/*" element={<DashboardLayout viewId="view-dashboard" />}>
+            <Route path="/dashboard/*" element={<DashboardLayout viewId="view-dashboard" />} >
               <Route path="*" element={<RoleBasedRouter />} />
+            </Route>
+            <Route path="/settings/*" element={<DashboardLayout viewId="view-settings" />}>
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Route>
           
@@ -67,7 +70,6 @@ function ResidentRoutes() {
         <Route path="chat" element={<ChatTab role="resident" />} />
         <Route path="issues" element={<IssuesTab role="resident" />} />
       </Route>
-      <Route path="profile" element={<Profile />} />
     </Routes>
   );
 }
@@ -84,7 +86,6 @@ function CommitteeRoutes() {
         <Route path="timeline" element={<div className="tc on" style={{ padding: '24px', textAlign: 'center', color: 'var(--text2)', background: 'var(--surface)', borderRadius: '14px', border: '1px dashed var(--border)' }}><h3>Governance</h3><p>Governance timeline coming soon.</p></div>} />
         <Route path="residents" element={<div className="tc on" style={{ padding: '24px', textAlign: 'center', color: 'var(--text2)', background: 'var(--surface)', borderRadius: '14px', border: '1px dashed var(--border)' }}><h3>Residents</h3><p>Resident management coming soon.</p></div>} />
       </Route>
-      <Route path="profile" element={<Profile />} />
     </Routes>
   );
 }
@@ -98,7 +99,6 @@ function AgentRoutes() {
         <Route path="docs" element={<DocumentsTab role="agent" />} />
         <Route path="issues" element={<IssuesTab role="agent" />} />
       </Route>
-      <Route path="profile" element={<Profile />} />
     </Routes>
   );
 }

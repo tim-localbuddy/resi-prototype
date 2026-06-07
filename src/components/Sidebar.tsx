@@ -28,7 +28,7 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
     {
       label: 'Account',
       items: [
-        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
+        { icon: '⚙️', label: 'Settings', path: '/settings/profile' },
       ]
     }
   ],
@@ -47,7 +47,7 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
       label: 'Admin',
       items: [
         { icon: '👥', label: 'Residents', path: '/dashboard/residents' },
-        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
+        { icon: '⚙️', label: 'Settings', path: '/settings/profile' },
       ]
     }
   ],
@@ -63,7 +63,7 @@ const sectionsByRole: Record<string, SidebarSection[]> = {
     {
       label: 'Account',
       items: [
-        { icon: '⚙️', label: 'Settings', path: '/dashboard/profile' },
+        { icon: '⚙️', label: 'Settings', path: '/settings/profile' },
       ]
     }
   ],

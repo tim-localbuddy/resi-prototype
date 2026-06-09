@@ -1,0 +1,17 @@
+.dashWrap{display:flex;min-height:100vh}
+.sidebar{width:var(--sw);background:var(--navy);padding:0;position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:50;display:flex;flex-direction:column}
+.sbSection{padding:0 10px;margin-top:4px}
+.sbSecLabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#475569;padding:12px 8px 4px}
+.sbItem{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;color:#94A3B8;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;position:relative}
+.sbItem:hover{background:rgba(255,255,255,.06);color:#fff}
+.on{background:rgba(59,130,246,.2);color:#60A5FA}
+.ic{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.sbBadge{margin-left:auto;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:100px}
+.sbUser{margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding:12px 14px;display:flex;align-items:center;gap:9px}
+.sbAv{width:30px;height:30px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#fff;flex-shrink:0}
+.sbUname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbUrole{font-size:11px;color:#64748B}
+.sbLogout{color:#64748B;cursor:pointer;font-size:13px;margin-left:auto;flex-shrink:0}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;padding:28px 32px;min-height:100vh}

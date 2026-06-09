@@ -1,0 +1,21 @@
+.authWrap{min-height:100vh;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.authCard{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;width:100%;max-width:440px;box-shadow:0 4px 32px rgba(0,0,0,.06)}
+.authTitle{font-size:22px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.authSub{font-size:13px;color:var(--text2);margin-bottom:26px}
+.formGroup{margin-bottom:14px}
+.formLabel{display:block;font-size:12px;font-weight:600;color:var(--text);margin-bottom:5px}
+.formInput{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s}
+.formInput:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fselect{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;color:var(--text);background:var(--surface);outline:none;cursor:pointer}
+.fselect:focus{border-color:var(--blue)}
+.radioGroup{display:flex;flex-direction:column;gap:8px}
+.radioOpt{display:flex;align-items:center;gap:10px;padding:10px 13px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .15s}
+.radioOpt:hover,.radioOpt.sel{border-color:var(--blue);background:var(--blue2)}
+.radioOptInput{accent-color:var(--blue)}
+.radioOptTxt{display:flex;flex-direction:column;gap:2px}
+.radioOptTitle{font-size:13px;font-weight:600}
+.radioOptSub{font-size:11px;color:var(--text2)}
+.authFt{text-align:center;font-size:13px;color:var(--text2);margin-top:18px}
+.authFtLink{color:var(--blue);font-weight:600;cursor:pointer}
+.verifyIcon{width:72px;height:72px;border-radius:50%;background:var(--blue2);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 20px}

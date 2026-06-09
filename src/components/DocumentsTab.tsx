@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDocuments, getDocumentDownloadUrl, uploadDocument, deleteDocument, formatBytes, getFileIcon, formatDate, type DocumentMeta } from '../lib/documents';
 import { useAuth } from '../contexts/AuthContext';
 import type { UserRole } from '../lib/auth/types';
+import styles from './Documents.module.css';
 
 export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
   const { user } = useAuth();
@@ -148,20 +149,20 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text2)' }}>Loading documents securely...</div>
       ) : (
-        <div className="doc-grid">
+        <div className={styles.docGrid}>
           {documents.map(doc => {
             const isRestricted = !doc.readAccess.includes('resident');
             return (
               <div
                 key={doc.id}
-                className="doc-card"
+                className={styles.docCard}
                 onClick={() => handleDocClick(doc.id)}
                 style={{ opacity: downloadingId === doc.id ? 0.6 : 1, cursor: downloadingId === doc.id ? 'wait' : 'pointer' }}
               >
-                <div className="doc-ic">{getFileIcon(doc.mimeType)}</div>
-                <div className="doc-name">{doc.name}</div>
-                <div className="doc-meta">Uploaded {formatDate(doc.createdAt)}</div>
-                <div className="doc-foot">
+                <div className={styles.docIc}>{getFileIcon(doc.mimeType)}</div>
+                <div className={styles.docName}>{doc.name}</div>
+                <div className={styles.docMeta}>Uploaded {formatDate(doc.createdAt)}</div>
+                <div className={styles.docFoot}>
                   {isRestricted ? (
                     <span className="badge b-gray">Restricted</span>
                   ) : (

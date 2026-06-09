@@ -2,6 +2,7 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { Logo } from './Logo';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
+import styles from '../layouts/Dashboard.module.css';
 
 interface SidebarItem {
   icon: string;
@@ -103,36 +104,36 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
+    <aside className={styles.sidebar}>
       <Logo variant="sidebar" />
 
       {sections.map((section, idx) => (
-        <div key={idx} className="sb-section">
-          <div className="sb-sec-label">{section.label}</div>
+        <div key={idx} className={styles.sbSection}>
+          <div className={styles.sbSecLabel}>{section.label}</div>
           {section.items.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => `sb-item ${isActive ? 'on' : ''}`}
+              className={({ isActive }) => `${styles.sbItem} ${isActive ? styles.on : ''}`}
               style={{ textDecoration: 'none' }}
             >
-              <span className="ic">{item.icon}</span>
+              <span className={styles.ic}>{item.icon}</span>
               {item.label}
-              {item.badge !== undefined && <span className="sb-badge">{item.badge}</span>}
+              {item.badge !== undefined && <span className={styles.sbBadge}>{item.badge}</span>}
             </NavLink>
           ))}
         </div>
       ))}
 
-      <div className="sb-user">
-        <div className="sb-av" style={avatarBg ? { background: avatarBg } : {}}>
+      <div className={styles.sbUser}>
+        <div className={styles.sbAv} style={avatarBg ? { background: avatarBg } : {}}>
           {initials}
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="sb-uname" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fullName}</div>
-          <div className="sb-urole" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getRoleDisplay()}</div>
+          <div className={styles.sbUname} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{fullName}</div>
+          <div className={styles.sbUrole} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{getRoleDisplay()}</div>
         </div>
-        <div className="sb-logout" onClick={handleSignOut} title="Sign out" style={{ cursor: 'pointer' }}>↩</div>
+        <div className={styles.sbLogout} onClick={handleSignOut} title="Sign out" style={{ cursor: 'pointer' }}>↩</div>
       </div>
     </aside>
   );

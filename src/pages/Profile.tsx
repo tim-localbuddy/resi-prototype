@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
+import styles from './Auth.module.css';
 
 export function Profile() {
   const { user, refreshUser } = useAuth();
-  
+
   const [firstName, setFirstName] = useState(user?.firstName || '');
   const [lastName, setLastName] = useState(user?.lastName || '');
   const [building, setBuilding] = useState(user?.building || '');
-  
+
   const [password, setPassword] = useState('');
-  
+
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -43,7 +44,7 @@ export function Profile() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password) return;
-    
+
     setLoading(true);
     setMessage('');
     setError('');
@@ -72,7 +73,7 @@ export function Profile() {
           <div>{error}</div>
         </div>
       )}
-      
+
       {message && (
         <div className="alert a-green" style={{ marginBottom: '16px', background: 'rgba(16, 185, 129, 0.1)', color: '#047857', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
           <div className="alert-ic">✓</div>
@@ -83,22 +84,22 @@ export function Profile() {
       <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '14px', border: '1px solid var(--border)', marginBottom: '24px' }}>
         <h3 style={{ marginBottom: '16px', fontSize: '18px' }}>Personal Details</h3>
         <form onSubmit={handleUpdateProfile}>
-          <div className="frow">
-            <div className="fg">
-              <label className="fl">First name</label>
-              <input className="fi" type="text" required value={firstName} onChange={e => setFirstName(e.target.value)} />
+          <div className={styles.frow}>
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>First name</label>
+              <input className={styles.formInput} type="text" required value={firstName} onChange={e => setFirstName(e.target.value)} />
             </div>
-            <div className="fg">
-              <label className="fl">Last name</label>
-              <input className="fi" type="text" required value={lastName} onChange={e => setLastName(e.target.value)} />
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Last name</label>
+              <input className={styles.formInput} type="text" required value={lastName} onChange={e => setLastName(e.target.value)} />
             </div>
           </div>
-          
-          <div className="fg">
-            <label className="fl">Building / Block name</label>
-            <input className="fi" type="text" required value={building} onChange={e => setBuilding(e.target.value)} />
+
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>Building / Block name</label>
+            <input className={styles.formInput} type="text" required value={building} onChange={e => setBuilding(e.target.value)} />
           </div>
-          
+
           <button type="submit" className="btn btn-primary" disabled={loading}>
             {loading ? 'Saving...' : 'Save Profile'}
           </button>
@@ -108,11 +109,11 @@ export function Profile() {
       <div style={{ background: 'var(--surface)', padding: '24px', borderRadius: '14px', border: '1px solid var(--border)' }}>
         <h3 style={{ marginBottom: '16px', fontSize: '18px' }}>Security</h3>
         <form onSubmit={handleUpdatePassword}>
-          <div className="fg">
-            <label className="fl">New Password</label>
-            <input className="fi" type="password" required placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} />
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>New Password</label>
+            <input className={styles.formInput} type="password" required placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} />
           </div>
-          
+
           <button type="submit" className="btn btn-outline" disabled={loading || !password}>
             {loading ? 'Updating...' : 'Update Password'}
           </button>

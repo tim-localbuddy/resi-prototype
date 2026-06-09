@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
+import styles from './Auth.module.css';
 
 export function Verify() {
   const { user, refreshUser } = useAuth();
@@ -12,10 +13,7 @@ export function Verify() {
   // Auto redirect if they suddenly become verified
   useEffect(() => {
     if (user?.emailVerified) {
-      const roles = Object.values(user.properties || {});
-      if (roles.includes('agent')) navigate('/agent');
-      else if (roles.includes('director')) navigate('/committee');
-      else navigate('/resident');
+      navigate('/dashboard');
     }
   }, [user, navigate]);
 
@@ -44,11 +42,11 @@ export function Verify() {
         <button className="btn btn-sm btn-ghost" onClick={refreshUser}>🔄 Refresh Status</button>
       </div>
 
-      <div className="auth-wrap">
-        <div className="auth-card" style={{ textAlign: 'center' }}>
-          <div className="verify-icon">📧</div>
-          <h2>Check your inbox</h2>
-          <p className="sub" style={{ marginBottom: '20px' }}>
+      <div className={styles.authWrap}>
+        <div className={styles.authCard} style={{ textAlign: 'center' }}>
+          <div className={styles.verifyIcon}>📧</div>
+          <h2 className={styles.authTitle}>Check your inbox</h2>
+          <p className={styles.authSub} style={{ marginBottom: '20px' }}>
             We've sent a verification link to your email address: <strong>{user?.email || 'your email'}</strong>. 
             Click the link to activate your account and access your dashboard.
           </p>

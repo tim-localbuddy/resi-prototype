@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { authProvider } from '../lib/auth';
 import { Logo } from '../components/Logo';
+import styles from './Auth.module.css';
 
 export function Login() {
   const navigate = useNavigate();
@@ -9,8 +10,6 @@ export function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,11 +50,11 @@ export function Login() {
 
   return (
     <div id="view-login" className="view on" style={{ paddingTop: 0 }}>
-      <div className="auth-wrap">
-        <div className="auth-card">
+      <div className={styles.authWrap}>
+        <div className={styles.authCard}>
           <Logo variant="auth" style={{ marginBottom: '28px' }} />
-          <h2>Welcome back</h2>
-          <p className="sub">Sign in to your building community account</p>
+          <h2 className={styles.authTitle}>Welcome back</h2>
+          <p className={styles.authSub}>Sign in to your building community account</p>
 
           {error && (
             <div className="alert a-red" style={{ marginBottom: '16px' }}>
@@ -65,24 +64,24 @@ export function Login() {
           )}
 
           <form onSubmit={handleLogin}>
-            <div className="fg">
-              <label className="fl">Email address</label>
-              <input 
-                className="fi" 
-                type="email" 
-                required 
-                placeholder="you@example.com" 
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Email address</label>
+              <input
+                className={styles.formInput}
+                type="email"
+                required
+                placeholder="you@example.com"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
               />
             </div>
-            <div className="fg">
-              <label className="fl">Password</label>
-              <input 
-                className="fi" 
-                type="password" 
-                required 
-                placeholder="••••••••" 
+            <div className={styles.formGroup}>
+              <label className={styles.formLabel}>Password</label>
+              <input
+                className={styles.formInput}
+                type="password"
+                required
+                placeholder="••••••••"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
               />
@@ -93,7 +92,7 @@ export function Login() {
               </label>
               <a style={{ fontSize: '13px', color: 'var(--blue)', cursor: 'pointer' }}>Forgot password?</a>
             </div>
-            
+
             <button type="submit" className="btn btn-primary w-full" disabled={loading}>
               {loading ? 'Logging in...' : 'Sign In'}
             </button>
@@ -101,9 +100,9 @@ export function Login() {
 
           <div className="divider"></div>
 
-          <button 
-            type="button" 
-            className="btn btn-outline w-full" 
+          <button
+            type="button"
+            className="btn btn-outline w-full"
             onClick={handleGoogleSignIn}
             disabled={loading}
           >
@@ -111,7 +110,7 @@ export function Login() {
           </button>
 
           <div style={{ textAlign: 'center', marginTop: '24px' }}>
-            <div className="auth-ft">Don't have an account? <Link to="/register">Register here</Link></div>
+            <div className={styles.authFt}>Don't have an account? <Link to="/register">Register here</Link></div>
           </div>
         </div>
       </div>

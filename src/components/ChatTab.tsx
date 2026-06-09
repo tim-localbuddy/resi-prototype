@@ -3,6 +3,7 @@ import { httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
 import { functionsEu } from '../lib/auth/firebaseProvider';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import styles from './Chat.module.css';
 
 interface ChatMessage {
   from: 'ai' | 'user';
@@ -135,34 +136,34 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
       <p style={{ fontSize: '13px', color: 'var(--text2)', marginBottom: '16px' }}>
         {cfg.subtitle}
       </p>
-      <div className="chat-wrap" id={cfg.chatId}>
-        <div className="chat-hd">
-          <div className="chat-av">💬✨</div>
+      <div className={styles.chatWrap} id={cfg.chatId}>
+        <div className={styles.chatHd}>
+          <div className={styles.chatAv}>💬✨</div>
           <div>
-            <div className="chat-ai-name">Bofast AI Assistant</div>
-            <div className="chat-ai-status">
-              <div className={`chat-ai-dot ${aiStatus?.status === 'Offline' ? 'offline' : ''}`}></div>
+            <div className={styles.chatAiName}>Bofast AI Assistant</div>
+            <div className={styles.chatAiStatus}>
+              <div className={`${styles.chatAiDot} ${aiStatus?.status === 'Offline' ? 'offline' : ''}`}></div>
               {aiStatus ? `${aiStatus.status} · ${aiStatus.documentCount} document${aiStatus.documentCount === 1 ? '' : 's'} indexed` : 'Connecting...'}
             </div>
           </div>
         </div>
 
-        <div className="chat-msgs" id={`${cfg.chatId}-msgs`} ref={msgsRef}>
+        <div className={styles.chatMsgs} id={`${cfg.chatId}-msgs`} ref={msgsRef}>
           {messages.map((msg, i) =>
             msg.from === 'ai' ? (
-              <div key={i} className="chat-msg">
-                <div className="cm-av ai-av">{cfg.avatarInitial}</div>
-                <div className="bubble ai-b">
+              <div key={i} className={styles.chatMsg}>
+                <div className={`${styles.cmAv} ${styles.aiAv}`}>{cfg.avatarInitial}</div>
+                <div className={`${styles.bubble} ${styles.aiB}`}>
                   <div className="markdown-body">
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                       {msg.text}
                     </ReactMarkdown>
                   </div>
                   {msg.references && msg.references.length > 0 && (
-                    <div className="chat-refs">
-                      <div className="refs-title">References:</div>
+                    <div className={styles.chatRefs}>
+                      <div className={styles.refsTitle}>References:</div>
                       {Array.from(new Map(msg.references.map(r => [r.uri, r])).values()).map((ref, idx) => (
-                        <a key={idx} href={ref.uri} target="_blank" rel="noopener noreferrer" className="ref-link">
+                        <a key={idx} href={ref.uri} target="_blank" rel="noopener noreferrer" className={styles.refLink}>
                           📄 {ref.title || 'Document'}
                         </a>
                       ))}
@@ -171,40 +172,40 @@ export function ChatTab({ role = 'resident' }: ChatTabProps) {
                 </div>
               </div>
             ) : (
-              <div key={i} className="chat-msg user-msg">
-                <div className="cm-av usr-av">Me</div>
-                <div className="bubble usr-b">{msg.text}</div>
+              <div key={i} className={`${styles.chatMsg} ${styles.userMsg}`}>
+                <div className={`${styles.cmAv} ${styles.usrAv}`}>Me</div>
+                <div className={`${styles.bubble} ${styles.usrB}`}>{msg.text}</div>
               </div>
             )
           )}
           {isTyping && (
-            <div className="chat-msg">
-              <div className="cm-av ai-av">{cfg.avatarInitial}</div>
-              <div className="bubble ai-b" style={{ opacity: 0.6 }}>
+            <div className={styles.chatMsg}>
+              <div className={`${styles.cmAv} ${styles.aiAv}`}>{cfg.avatarInitial}</div>
+              <div className={`${styles.bubble} ${styles.aiB}`} style={{ opacity: 0.6 }}>
                 <span className="typing-dots">Thinking…</span>
               </div>
             </div>
           )}
         </div>
 
-        <div className="chat-sugg" id={`${cfg.chatId}-sugg`}>
+        <div className={styles.chatSugg} id={`${cfg.chatId}-sugg`}>
           {dynamicSuggestions.map((s) => (
-            <div key={s} className="sugg-chip" onClick={() => sendMessage(s)}>
+            <div key={s} className={styles.suggChip} onClick={() => sendMessage(s)}>
               {s}
             </div>
           ))}
         </div>
 
-        <div className="chat-input-row">
+        <div className={styles.chatInputRow}>
           <input
-            className="chat-in"
+            className={styles.chatIn}
             type="text"
             placeholder="Ask about your building…"
             value={inputValue}
             onChange={e => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
           />
-          <button className="chat-send" onClick={() => sendMessage(inputValue)}>➤</button>
+          <button className={styles.chatSend} onClick={() => sendMessage(inputValue)}>➤</button>
         </div>
       </div>
     </div>

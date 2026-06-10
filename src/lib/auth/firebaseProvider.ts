@@ -1,20 +1,21 @@
 import { initializeApp } from 'firebase/app';
+import type { ActionCodeSettings } from 'firebase/auth';
 import {
-  getAuth,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut as firebaseSignOut,
-  onAuthStateChanged as firebaseOnAuthStateChanged,
-  sendEmailVerification,
   connectAuthEmulator,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged as firebaseOnAuthStateChanged,
+  signOut as firebaseSignOut,
+  getAuth,
+  GoogleAuthProvider,
+  sendEmailVerification,
+  signInWithEmailAndPassword,
+  signInWithPopup,
   updatePassword,
   updateProfile
 } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, updateDoc, connectFirestoreEmulator } from 'firebase/firestore';
-import { getStorage, connectStorageEmulator } from 'firebase/storage';
-import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { connectFirestoreEmulator, doc, getDoc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
+import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
+import { connectStorageEmulator, getStorage } from 'firebase/storage';
 import type { AppUser, AuthProvider, UserRole } from './types';
 
 const firebaseConfig = {
@@ -32,7 +33,7 @@ export const db = getFirestore(app);
 export const storage = getStorage(app);
 export const functionsEu = getFunctions(app, 'europe-west1');
 
-if (import.meta.env.DEV) {
+if (import.meta.env.DEV && import.meta.env.VITE_USE_MOCK_EMULATOR === 'true') {
   connectAuthEmulator(auth, 'http://127.0.0.1:9099');
   connectFirestoreEmulator(db, '127.0.0.1', 8080);
   connectStorageEmulator(storage, '127.0.0.1', 9199);
@@ -66,6 +67,12 @@ async function getUserProfile(uid: string, fallbackEmail: string | null, emailVe
   };
 }
 
+// After clicking the verification link, Firebase redirects here.
+// The user lands on /login where they can sign in with their now-verified account.
+const verificationActionSettings: ActionCodeSettings = {
+  url: `${window.location.origin}/login`,
+  handleCodeInApp: true,
+};
 export const firebaseProvider: AuthProvider = {
   signInWithEmail: async (email, pass) => {
     const cred = await signInWithEmailAndPassword(auth, email, pass);
@@ -86,7 +93,7 @@ export const firebaseProvider: AuthProvider = {
       building
     });
 
-    await sendEmailVerification(cred.user);
+    await sendEmailVerification(cred.user, verificationActionSettings);
     return await getUserProfile(cred.user.uid, cred.user.email, cred.user.emailVerified, `${firstName} ${lastName}`);
   },
   signInWithGoogle: async () => {
@@ -103,7 +110,7 @@ export const firebaseProvider: AuthProvider = {
   },
   resendVerificationEmail: async () => {
     if (auth.currentUser) {
-      await sendEmailVerification(auth.currentUser);
+      await sendEmailVerification(auth.currentUser, verificationActionSettings);
     }
   },
   onAuthStateChanged: (callback) => {

@@ -1,8 +1,9 @@
 import issueStyles from './Issues.module.css';
 import formStyles from '../pages/Auth.module.css';
+import type { UserRole } from '../lib/auth/userRole';
 
 interface IssuesTabProps {
-  role: 'resident' | 'committee' | 'agent';
+  role: UserRole;
 }
 
 export function IssuesTab({ role }: IssuesTabProps) {

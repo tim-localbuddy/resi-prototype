@@ -1,4 +1,4 @@
-export type UserRole = 'resident' | 'director' | 'agent' | 'committee';
+import type { UserRole } from "./userRole";
 
 export interface AppUser {
   uid: string;
@@ -12,7 +12,7 @@ export interface AppUser {
 
 export interface AuthProvider {
   signInWithEmail: (email: string, pass: string) => Promise<AppUser>;
-  signUpWithEmail: (email: string, pass: string, role: string, buildingName: string, firstName: string, lastName: string) => Promise<AppUser>;
+  signUpWithEmail: (email: string, pass: string, role: UserRole, buildingName: string, firstName: string, lastName: string) => Promise<AppUser>;
   signInWithGoogle: () => Promise<AppUser>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<void>;

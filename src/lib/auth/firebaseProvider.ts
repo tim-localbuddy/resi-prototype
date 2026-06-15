@@ -16,7 +16,8 @@ import {
 import { connectFirestoreEmulator, doc, getDoc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { connectStorageEmulator, getStorage } from 'firebase/storage';
-import type { AppUser, AuthProvider, UserRole } from './types';
+import type { AppUser, AuthProvider } from './types';
+import type { UserRole } from "./userRole";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy",
@@ -80,11 +81,7 @@ export const firebaseProvider: AuthProvider = {
   },
   signUpWithEmail: async (email, pass, role, building, firstName, lastName) => {
     const cred = await createUserWithEmailAndPassword(auth, email, pass);
-    let cleanRole: UserRole = 'resident';
-    if (role.toLowerCase().includes('director')) cleanRole = 'director';
-    if (role.toLowerCase().includes('agent')) cleanRole = 'agent';
-
-    const properties = { ['property1']: cleanRole };
+    const properties = { property1: role };
 
     await setDoc(doc(db, 'users', cred.user.uid), {
       properties,

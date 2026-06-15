@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchDocuments, getDocumentDownloadUrl, uploadDocument, deleteDocument, formatBytes, getFileIcon, formatDate, type DocumentMeta } from '../lib/documents';
 import { useAuth } from '../contexts/AuthContext';
-import type { UserRole } from '../lib/auth/types';
+import type { UserRole } from "../lib/auth/userRole";
 import styles from './Documents.module.css';
 
 export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
@@ -30,7 +30,7 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
   const loadDocs = useCallback(() => {
     // Defer state update to avoid "cascading renders" warning in useEffect
     Promise.resolve().then(() => setLoading(true));
-    
+
     fetchDocuments(activeRole, propertyId)
       .then(docs => setDocuments(docs))
       .catch(err => setError((err as Error).message))
@@ -172,16 +172,16 @@ export function DocumentsTab({ role = 'resident' }: { role?: UserRole }) {
                   <span className="text-xs text2">{formatBytes(doc.size)}</span>
                   {doc.writeAccess.includes(activeRole) && (
                     <div className="doc-actions" style={{ display: 'flex', gap: '8px', marginLeft: '8px' }}>
-                      <button 
-                        className="btn-icon" 
+                      <button
+                        className="btn-icon"
                         title="Replace document"
                         onClick={(e) => openEditModal(doc, e)}
                         style={{ padding: '2px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '14px' }}
                       >
                         ✏️
                       </button>
-                      <button 
-                        className="btn-icon" 
+                      <button
+                        className="btn-icon"
                         title="Delete document"
                         onClick={(e) => handleDeleteDoc(doc.id, e)}
                         style={{ padding: '2px 4px', background: 'transparent', border: 'none', cursor: 'pointer', fontSize: '14px' }}

@@ -3,6 +3,7 @@ import { Logo } from './Logo';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
 import styles from '../layouts/Dashboard.module.css';
+import type { UserRole } from '../lib/auth/userRole';
 
 interface SidebarItem {
   icon: string;
@@ -16,7 +17,7 @@ interface SidebarSection {
   items: SidebarItem[];
 }
 
-const sectionsByRole: Record<string, SidebarSection[]> = {
+const sectionsByRole: Record<Exclude<UserRole, 'director'>, SidebarSection[]> = {
   agent: [
     {
       label: 'Portfolio',
@@ -84,11 +85,11 @@ export function Sidebar() {
     navigate('/');
   };
 
-  const roles = Object.values(user?.properties || {});
-  let activeRole = 'resident';
+  const roles: UserRole[] = Object.values(user?.properties || {});
+  let activeRole: UserRole = 'resident';
   if (roles.includes('agent')) activeRole = 'agent';
   else if (roles.includes('director')) activeRole = 'committee';
-  
+
   const sections = sectionsByRole[activeRole] || [];
   const avatarBg = avatarColors[activeRole] || '';
 

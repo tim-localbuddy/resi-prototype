@@ -1,8 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import { httpsCallable, connectFunctionsEmulator } from 'firebase/functions';
-import { functionsEu } from '../lib/auth/firebaseProvider';
+import { connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useAuth } from '../contexts/AuthContext';
+import { functionsEu } from '../lib/auth/firebaseProvider';
+import type { UserRole } from '../lib/auth/userRole';
 import styles from './Chat.module.css';
 
 interface ChatMessage {
@@ -12,14 +14,22 @@ interface ChatMessage {
 }
 
 interface ChatTabProps {
-  role?: 'resident' | 'committee' | 'agent';
+  role?: UserRole;
 }
 
-const CONFIG = {
+type ChatConfig = {
+  readonly chatId: string;
+  readonly subtitle: string;
+  readonly greeting: (name: string) => string;
+  readonly avatarInitial: string;
+  readonly suggestions: string[];
+}
+
+const CHAT_CONFIG: { [role in UserRole]: ChatConfig } = {
   resident: {
     chatId: 'chat-resident',
     subtitle: 'Ask anything about your service charges, lease, AGM decisions, or building documents.',
-    greeting: "Hello Terry! I'm the Bofast AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?",
+    greeting: (name: string) => `Hello ${name}! I'm the Bofast AI assistant for Maple House. I have access to your AGM minutes, building insurance certificate, and the major works consultation. What would you like to know?`,
     avatarInitial: 'T',
     suggestions: [
       'What are my service charges?',
@@ -31,7 +41,19 @@ const CONFIG = {
   committee: {
     chatId: 'chat-committee',
     subtitle: 'Ask anything about building compliance, resident issues, service charges, or governance documents.',
-    greeting: "Hello Emma! I'm the Bofast AI assistant for Maple House. I have access to all building documents including committee-only files, AGM minutes, and maintenance records. How can I help?",
+    greeting: (name: string) => `Hello ${name}! I'm the Bofast AI assistant for Maple House. I have access to all building documents including committee-only files, AGM minutes, and maintenance records. How can I help?`,
+    avatarInitial: 'E',
+    suggestions: [
+      'Summarise the service charge breakdown',
+      'Any compliance issues to flag?',
+      'Draft AGM notice for November',
+      'Status of major works?',
+    ],
+  },
+  director: {
+    chatId: 'chat-committee',
+    subtitle: 'Ask anything about building compliance, resident issues, service charges, or governance documents.',
+    greeting: (name: string) => `Hello ${name}! I'm the Bofast AI assistant for Maple House. I have access to all building documents including committee-only files, AGM minutes, and maintenance records. How can I help?`,
     avatarInitial: 'E',
     suggestions: [
       'Summarise the service charge breakdown',
@@ -43,7 +65,7 @@ const CONFIG = {
   agent: {
     chatId: 'chat-agent',
     subtitle: 'Query documents, compliance data, and resident information across all buildings you manage.',
-    greeting: "Hello! I'm the Bofast AI assistant. I have access to all managed buildings and their documents. What would you like to know?",
+    greeting: (name: string) => `Hello ${name}! I'm the Bofast AI assistant. I have access to all managed buildings and their documents. What would you like to know?`,
     avatarInitial: 'A',
     suggestions: [
       'List buildings with open issues',
@@ -55,11 +77,18 @@ const CONFIG = {
 } as const;
 
 export function ChatTab({ role = 'resident' }: ChatTabProps) {
-  const cfg = CONFIG[role];
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    { from: 'ai', text: cfg.greeting },
-  ]);
+  const cfg = CHAT_CONFIG[role];
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const { user } = useAuth();
+
+  const displayName = user?.firstName.trim() || 'Resident';
+  useEffect(() => {
+    setMessages(prev => {
+      return (prev.length === 0) ? [{ from: 'ai', text: cfg.greeting(displayName) }] : prev;
+    });
+  }, [displayName, cfg]);
+
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [dynamicSuggestions, setDynamicSuggestions] = useState<string[]>([...cfg.suggestions]);

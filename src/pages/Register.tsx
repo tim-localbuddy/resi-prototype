@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authProvider } from '../lib/auth';
 import { Logo } from '../components/Logo';
+import { authProvider } from '../lib/auth';
+import type { UserRole } from '../lib/auth/userRole';
 import styles from './Auth.module.css';
 
 export function Register() {
@@ -10,7 +11,7 @@ export function Register() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [building, setBuilding] = useState('');
-  const [role, setRole] = useState('resident');
+  const [role, setRole] = useState<UserRole>('resident');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,8 +24,8 @@ export function Register() {
       await authProvider.signUpWithEmail(email, password, role, building, firstName, lastName);
       // Registration complete, Firebase will auto-trigger sendEmailVerification per our backend provider.
       navigate('/verify');
-    } catch (err: any) {
-      setError(err.message || 'Failed to register.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to register.');
     } finally {
       setLoading(false);
     }
@@ -40,8 +41,8 @@ export function Register() {
       else {
         navigate('/dashboard');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to sign up with Google.');
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to sign up with Google.');
     } finally {
       setLoading(false);
     }
@@ -88,11 +89,11 @@ export function Register() {
 
             <div className={styles.formGroup}>
               <label className={styles.formLabel}>Your role</label>
-              <select className={styles.fselect} value={role} onChange={e => setRole(e.target.value)}>
+              <select className={styles.fselect} value={role} onChange={e => setRole(e.target.value as UserRole)}>
                 <option value="resident">Resident</option>
-                <option value="director">Committee Director / RTM</option>
+                <option value="committee">Committee Director / RTM</option>
                 <option value="agent">Managing Agent</option>
-                <option value="freeholder">Freeholder / Landlord</option>
+                {/* <option value="freeholder">Freeholder / Landlord</option> */}
               </select>
             </div>
 

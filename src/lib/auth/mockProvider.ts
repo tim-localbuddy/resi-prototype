@@ -1,4 +1,5 @@
-import type { AppUser, AuthProvider, UserRole } from './types';
+import type { AppUser, AuthProvider } from './types';
+import type { UserRole } from "./userRole";
 
 // Mock simple state
 let currentUser: AppUser | null = null;
@@ -103,7 +104,7 @@ export const mockProvider: AuthProvider = {
     }
     throw new Error('Not authenticated');
   },
-  updateUserPassword: async (_newPassword) => {
+  updateUserPassword: async () => {
     await new Promise(r => setTimeout(r, 800));
     if (!currentUser) throw new Error('Not authenticated');
     // In a real mock we might check current password, but here we just simulate success.

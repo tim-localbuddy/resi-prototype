@@ -1,9 +1,13 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, NavLink } from 'react-router-dom';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
+import { db } from '../lib/auth/firebaseProvider';
 import { Logo } from './Logo';
 import { useAuth } from '../contexts/AuthContext';
 import { authProvider } from '../lib/auth';
 import styles from '../layouts/Dashboard.module.css';
 import type { UserRole } from '../lib/auth/userRole';
+import { IssueStatus } from '../types/issues';
 
 interface SidebarItem {
   icon: string;
@@ -79,18 +83,59 @@ const avatarColors: Record<string, string> = {
 export function Sidebar() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const [openIssuesCount, setOpenIssuesCount] = useState<number | null>(null);
+
+  const roles: UserRole[] = Object.values(user?.properties || {});
+  let activeRole: UserRole = 'resident';
+  if (roles.includes('agent')) activeRole = 'agent';
+  else if (roles.includes('committee') || roles.includes('director')) activeRole = 'committee';
+
+  useEffect(() => {
+    if (!user) return;
+
+    let q;
+    if (activeRole === 'resident') {
+      q = query(
+        collection(db, 'issues'),
+        where('loggedByUid', '==', user.uid),
+        where('status', '==', IssueStatus.Open),
+        where('property', '==', 'property1')
+      );
+    } else {
+      q = query(
+        collection(db, 'issues'),
+        where('status', '==', IssueStatus.Open),
+        where('property', '==', 'property1')
+      );
+    }
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setOpenIssuesCount(snapshot.size);
+    });
+
+    return () => unsubscribe();
+  }, [user, activeRole]);
 
   const handleSignOut = async () => {
     await authProvider.signOut();
     navigate('/');
   };
 
-  const roles: UserRole[] = Object.values(user?.properties || {});
-  let activeRole: UserRole = 'resident';
-  if (roles.includes('agent')) activeRole = 'agent';
-  else if (roles.includes('director')) activeRole = 'committee';
+  const rawSections = sectionsByRole[activeRole] || [];
+  const sections = rawSections.map(section => ({
+    ...section,
+    items: section.items.map(item => {
+      if (item.path === '/dashboard/issues') {
+        const count = openIssuesCount !== null ? openIssuesCount : item.badge;
+        return {
+          ...item,
+          badge: count && count > 0 ? count : undefined
+        };
+      }
+      return item;
+    })
+  }));
 
-  const sections = sectionsByRole[activeRole] || [];
   const avatarBg = avatarColors[activeRole] || '';
 
   const fullName = user ? `${user.firstName} ${user.lastName}`.trim() : 'User';

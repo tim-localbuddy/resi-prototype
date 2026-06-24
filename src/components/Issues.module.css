@@ -22,3 +22,80 @@
 /* STATUS SELECT */
 .sStat{padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;cursor:pointer;background:#fff;outline:none}
 .sStat:focus{border-color:var(--blue)}
+
+/* EXTRA PRODUCTION STYLES */
+.issueTextarea {
+  resize: vertical;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.issueTitleCell {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+}
+
+.pdMargin {
+  margin-right: 6px;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--text2);
+}
+
+.reminderBanner {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.reminderTitle {
+  color: #92400E;
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reminderDesc {
+  color: #92400E;
+  margin: 0;
+  font-size: 13px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardHeaderBadges {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.filterContainer {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loggedByName {
+  font-weight: 600;
+  color: var(--navy);
+}
+
+.lapseWarning {
+  color: #B45309;
+  font-weight: 600;
+}
+

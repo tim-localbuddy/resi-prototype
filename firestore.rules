@@ -1,4 +1,4 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -17,6 +17,17 @@ service cloud.firestore {
     match /documents/{documentId} {
       allow read: if isAuthenticated() && 
         resource.data.propertyId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.properties;
+    }
+
+    // Issues rules
+    match /issues/{issueId} {
+      // Allow read if user is the creator OR their role on the issue's property is privileged
+      allow read: if isAuthenticated() && (
+        resource.data.loggedByUid == request.auth.uid ||
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.properties[resource.data.property] in ['director', 'committee', 'agent']
+      );
+      // All writes must go through Cloud Functions
+      allow write: if false;
     }
   }
 }

@@ -10,3 +10,4 @@ setGlobalOptions({
 export { askAi, getAiStatus } from "./askAi";
 export { getUploadUrl, markDocumentUploaded, getDownloadUrl, deleteDocument } from "./documents";
 export { syncDocumentToDatastore } from "./datastoreSync";
+export { logIssue, updateIssueStatus } from "./issues";

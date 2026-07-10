@@ -10,6 +10,11 @@ service cloud.firestore {
     // User can read/write their own user document
     match /users/{userId} {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
+      
+      // User can read/write/delete their own chat sessions
+      match /chat_sessions/{sessionId} {
+        allow read, write: if isAuthenticated() && request.auth.uid == userId;
+      }
     }
 
     // User can read documents if they have access to the document's property
